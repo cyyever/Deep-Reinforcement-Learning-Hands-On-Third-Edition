@@ -1,5 +1,6 @@
-from nicegui import ui, events
 import typing as tt
+
+from nicegui import events, ui
 
 from lib import rlhf
 
@@ -15,7 +16,6 @@ DRAWER_ITEMS = (
 )
 
 
-
 def drawers(active_url: str):
     with ui.left_drawer(fixed=True).props("bordered").style('background-color: #ebf1fa') as drawer:
         with ui.column().classes("gap-3 text-body1"):
@@ -24,16 +24,15 @@ def drawers(active_url: str):
                 if link == active_url:
                     l_obj.style("color: red")
 
-    with ui.header(elevated=True):
-        with ui.row().classes("fit items-center"):
-            ui.button(on_click=lambda: drawer.toggle()).\
+    with ui.header(elevated=True), ui.row().classes("fit items-center"):
+        ui.button(on_click=lambda: drawer.toggle()).\
                 props('flat color=white icon=menu')
-            ui.label("RLHF label UI").classes("text-h5 col-grow")
+        ui.label("RLHF label UI").classes("text-h5 col-grow")
 
 
 def label_list_view(db: rlhf.Database, items: list[rlhf.HumanLabel],
                     show_resample_list: bool = True):
-    selected_row: tt.Optional[dict] = None
+    selected_row: dict | None = None
     rows = [item.to_json(extra_id=idx) for idx, item in enumerate(items)]
 
     with ui.row(wrap=False).classes("w-full"):
@@ -107,6 +106,7 @@ def label_list_view(db: rlhf.Database, items: list[rlhf.HumanLabel],
         img_sample2.set_source(s2_gif)
 
     first_select = True
+
     def _grid_data_rendered():
         nonlocal first_select
         if first_select:

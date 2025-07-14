@@ -1,9 +1,14 @@
+import typing as tt
+
 import numpy as np
-from ptan.experience import ExperienceReplayBuffer, ExperienceSource, ExperienceFirstLast
 import torch
+from ptan.experience import (
+    ExperienceFirstLast,
+    ExperienceReplayBuffer,
+    ExperienceSource,
+)
 from torch import nn as nn
 from torchrl.modules import NoisyLinear
-import typing as tt
 
 # replay buffer params
 BETA_START = 0.4
@@ -17,7 +22,7 @@ DELTA_Z = (Vmax - Vmin) / (N_ATOMS - 1)
 
 
 class NoisyDQN(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...],
+    def __init__(self, input_shape: tuple[int, ...],
                  n_actions: int):
         super().__init__()
 
@@ -86,7 +91,7 @@ class PrioReplayBuffer(ExperienceReplayBuffer):
             self.priorities[self.pos] = max_prio
             self.pos = (self.pos + 1) % self.capacity
 
-    def sample(self, batch_size: int) -> tt.Tuple[
+    def sample(self, batch_size: int) -> tuple[
         list[ExperienceFirstLast], np.ndarray, np.ndarray
     ]:
         if len(self.buffer) == self.capacity:
@@ -104,12 +109,12 @@ class PrioReplayBuffer(ExperienceReplayBuffer):
         return samples, indices, np.array(weights, dtype=np.float32)
 
     def update_priorities(self, batch_indices: np.ndarray, batch_priorities: np.ndarray):
-        for idx, prio in zip(batch_indices, batch_priorities):
+        for idx, prio in zip(batch_indices, batch_priorities, strict=False):
             self.priorities[idx] = prio
 
 
 class DuelingDQN(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
+    def __init__(self, input_shape: tuple[int, ...], n_actions: int):
         super().__init__()
 
         self.conv = nn.Sequential(
@@ -144,7 +149,7 @@ class DuelingDQN(nn.Module):
 
 
 class DistributionalDQN(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
+    def __init__(self, input_shape: tuple[int, ...], n_actions: int):
         super().__init__()
 
         self.conv = nn.Sequential(
@@ -173,7 +178,7 @@ class DistributionalDQN(nn.Module):
         fc_out = self.fc(self.conv(xx))
         return fc_out.view(batch_size, -1, N_ATOMS)
 
-    def both(self, x: torch.ByteTensor) -> tt.Tuple[torch.Tensor, torch.Tensor]:
+    def both(self, x: torch.ByteTensor) -> tuple[torch.Tensor, torch.Tensor]:
         cat_out = self(x)
         probs = self.apply_softmax(cat_out)
         weights = probs * self.supports
@@ -228,7 +233,7 @@ def distr_projection(next_distr: np.ndarray, rewards: np.ndarray,
 
 
 class RainbowDQN(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...],
+    def __init__(self, input_shape: tuple[int, ...],
                  n_actions: int):
         super().__init__()
 

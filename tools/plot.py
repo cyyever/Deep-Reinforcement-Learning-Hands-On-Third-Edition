@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-import csv
 import argparse
-import ballpark
 import collections
-from matplotlib.ticker import FuncFormatter
-import matplotlib.pyplot as plt
+import csv
 
+import ballpark
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -40,7 +40,7 @@ if __name__ == "__main__":
                 t = float(row["Wall time"])
                 if min_time is None:
                     min_time = t
-                h = float(t - min_time)/3600
+                h = float(t - min_time) / 3600
                 if args.max_dt is not None and args.max_dt < h:
                     continue
                 hours.append(h)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         data.append([hours, steps, vals])
 
     x_label = "Hours"
-    if max_hours < 2/60:
+    if max_hours < 2 / 60:
         x_label = "Seconds"
         for hours, _, _ in data:
             for idx, h in enumerate(hours):
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     if not args.legend:
         ax2 = ax1.twiny()
 
-    for (hours, steps, vals), style in zip(data, ('-', ':', '--', '-.')):
+    for (hours, steps, vals), style in zip(data, ('-', ':', '--', '-.'), strict=False):
         x = steps if args.use_steps else hours
         ax1.plot(x, vals, color='black', linewidth=args.line_width, linestyle=style)
 

@@ -1,10 +1,11 @@
-import ptan
 import time
+from collections.abc import Callable
+
 import numpy as np
+import ptan
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from collections.abc import Callable
 
 from . import dqn_extra
 
@@ -62,7 +63,7 @@ def calc_adv_ref(values, dones, rewards, gamma, gae_lambda):
     adv, ref = [], []
 
     for val, next_val, done, reward in zip(reversed(values[:-1]), reversed(values[1:]),
-                                           reversed(dones[:-1]), reversed(rewards[:-1])):
+                                           reversed(dones[:-1]), reversed(rewards[:-1]), strict=False):
         if done:
             delta = reward - val
             last_gae = delta
@@ -93,11 +94,11 @@ def batch_generator(exp_source: ptan.experience.ExperienceSource,
         trj_rewards.append(exp.reward)
         trj_dones.append(exp.done_trunc)
         if exp.done_trunc:
-            last_done_index = len(trj_states)-1
+            last_done_index = len(trj_states) - 1
         if len(trj_states) < trajectory_size:
             continue
         # ensure that we have at least one full episode in the trajectory
-        if last_done_index is None or last_done_index == len(trj_states)-1:
+        if last_done_index is None or last_done_index == len(trj_states) - 1:
             continue
 
         if new_batch_callable is not None:
@@ -106,7 +107,7 @@ def batch_generator(exp_source: ptan.experience.ExperienceSource,
         # trim the trajectory till the last done plus one step (which will be discarded).
         # This increases convergence speed and stability
         if trim_trajectory:
-            trj_states = trj_states[:last_done_index+2]
+            trj_states = trj_states[:last_done_index + 2]
             trj_actions = trj_actions[:last_done_index + 2]
             trj_rewards = trj_rewards[:last_done_index + 2]
             trj_dones = trj_dones[:last_done_index + 2]
@@ -130,7 +131,7 @@ def batch_generator(exp_source: ptan.experience.ExperienceSource,
         trj_len = len(trj_states) - 1
         trj_len -= trj_len % batch_size
         trj_len += 1
-        indices = np.arange(0, trj_len-1)
+        indices = np.arange(0, trj_len - 1)
 
         # generate needed amount of batches
         for _ in range(ppo_epoches):
@@ -174,11 +175,11 @@ def batch_generator_distill(exp_source: ptan.experience.ExperienceSource,
         trj_rewards.append(exp.reward.sum())
         trj_dones.append(exp.done_trunc)
         if exp.done_trunc:
-            last_done_index = len(trj_states)-1
+            last_done_index = len(trj_states) - 1
         if len(trj_states) < trajectory_size:
             continue
         # ensure that we have at least one full episode in the trajectory
-        if last_done_index is None or last_done_index == len(trj_states)-1:
+        if last_done_index is None or last_done_index == len(trj_states) - 1:
             continue
 
         trj_dt = time.time() - trj_time
@@ -190,7 +191,7 @@ def batch_generator_distill(exp_source: ptan.experience.ExperienceSource,
         # trim the trajectory till the last done plus one step (which will be discarded).
         # This increases convergence speed and stability
         if trim_trajectory:
-            trj_states = trj_states[:last_done_index+2]
+            trj_states = trj_states[:last_done_index + 2]
             trj_actions = trj_actions[:last_done_index + 2]
             trj_rewards_ext = trj_rewards_ext[:last_done_index + 2]
             trj_rewards_int = trj_rewards_int[:last_done_index + 2]
@@ -226,7 +227,7 @@ def batch_generator_distill(exp_source: ptan.experience.ExperienceSource,
         trj_len = len(trj_states) - 1
         trj_len -= trj_len % batch_size
         trj_len += 1
-        indices = np.arange(0, trj_len-1)
+        indices = np.arange(0, trj_len - 1)
         prep_dt = time.time() - prep_ts
 
         # generate needed amount of batches

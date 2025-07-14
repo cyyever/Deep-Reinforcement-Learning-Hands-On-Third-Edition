@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 import argparse
-import pathlib
 import logging
-
-from lib import rlhf
+import pathlib
 
 import torch
 import torch.nn.functional as F
+from lib import rlhf
 from torch import optim
+from torch.utils.data import ConcatDataset, DataLoader, Dataset
 from torch.utils.tensorboard.writer import SummaryWriter
-from torch.utils.data import DataLoader, Dataset, ConcatDataset
 
 log = logging.getLogger("reward_train")
 
@@ -20,6 +19,7 @@ TOTAL_ACTIONS = 18
 BATCH_SIZE = 64
 LEARNING_RATE = 1e-4
 MAX_EPOCHES = 1000
+
 
 class LabelsDataset(Dataset):
     def __init__(self, db: rlhf.Database,
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         log.info("Loaded DB from %s with %d labels and %d paths",
                  db.db_root, len(db.labels), len(db.paths))
         db.shuffle_labels(SPLIT_SEED)
-        pos = int(len(db.labels) * (1-TEST_RATIO))
+        pos = int(len(db.labels) * (1 - TEST_RATIO))
         train_labels, test_labels = db.labels[:pos], db.labels[pos:]
         train_datasets.append(LabelsDataset(db, train_labels))
         test_datasets.append(LabelsDataset(db, test_labels))

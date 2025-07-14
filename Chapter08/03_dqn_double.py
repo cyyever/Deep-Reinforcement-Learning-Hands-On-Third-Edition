@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
+import typing as tt
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
 import torch.optim as optim
-from torch import nn
-import typing as tt
-import numpy as np
-
 from ignite.engine import Engine
-
-from lib import dqn_model, common
+from lib import common, dqn_model
+from torch import nn
 
 NAME = "03_double"
 STATES_TO_EVALUATE = 1000
@@ -56,7 +54,7 @@ def calc_loss_double_dqn(
 
 
 def train(params: common.Hyperparams,
-          device: torch.device, extra: dict) -> tt.Optional[int]:
+          device: torch.device, extra: dict) -> int | None:
     env = gym.make(params.env_name)
     env = ptan.common.wrappers.wrap_dqn(env)
 
@@ -119,6 +117,6 @@ def train(params: common.Hyperparams,
 if __name__ == "__main__":
     parser = common.argparser()
     parser.add_argument("--double", default=False, action="store_true",
-                        help = "Enable double dqn, default=disabled")
+                        help="Enable double dqn, default=disabled")
     args = parser.parse_args()
     common.train_or_tune(args, train, BEST_PONG)

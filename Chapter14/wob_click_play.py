@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 import argparse
-import numpy as np
 
+import numpy as np
 import torch
 import torch.nn.functional as F
-
-from lib import wob, model
-
+from lib import model, wob
 
 ENV_NAME = 'miniwob/click-dialog-v1'
 

@@ -59,7 +59,6 @@ COUNT_TO_WIN = 4
 # INITIAL_STATE = encode_lists([[]] * GAME_COLS)
 
 
-
 def bits_to_int(bits):
     res = 0
     for b in bits:
@@ -89,7 +88,7 @@ def encode_lists(field_lists):
     len_bits = []
     for col in field_lists:
         bits.extend(col)
-        free_len = GAME_ROWS-len(col)
+        free_len = GAME_ROWS - len(col)
         bits.extend([0] * free_len)
         len_bits.extend(int_to_bits(free_len, bits=BITS_IN_LEN))
     bits.extend(len_bits)
@@ -106,12 +105,12 @@ def decode_binary(state_int):
     :return: list of GAME_COLS lists
     """
     assert isinstance(state_int, int)
-    bits = int_to_bits(state_int, bits=GAME_COLS*GAME_ROWS + GAME_COLS*BITS_IN_LEN)
+    bits = int_to_bits(state_int, bits=GAME_COLS * GAME_ROWS + GAME_COLS * BITS_IN_LEN)
     res = []
-    len_bits = bits[GAME_COLS*GAME_ROWS:]
+    len_bits = bits[GAME_COLS * GAME_ROWS:]
     for col in range(GAME_COLS):
-        vals = bits[col*GAME_ROWS:(col+1)*GAME_ROWS]
-        lens = bits_to_int(len_bits[col*BITS_IN_LEN:(col+1)*BITS_IN_LEN])
+        vals = bits[col * GAME_ROWS:(col + 1) * GAME_ROWS]
+        lens = bits_to_int(len_bits[col * BITS_IN_LEN:(col + 1) * BITS_IN_LEN])
         if lens > 0:
             vals = vals[:-lens]
         res.append(vals)
@@ -138,11 +137,11 @@ def _check_won(field, col, delta_row):
     :return: True if won, False if not
     """
     player = field[col][-1]
-    coord = len(field[col])-1
+    coord = len(field[col]) - 1
     total = 1
     # negative dir
     cur_coord = coord - delta_row
-    for c in range(col-1, -1, -1):
+    for c in range(col - 1, -1, -1):
         if len(field[c]) <= cur_coord or cur_coord < 0 or cur_coord >= GAME_ROWS:
             break
         if field[c][cur_coord] != player:
@@ -153,7 +152,7 @@ def _check_won(field, col, delta_row):
         cur_coord -= delta_row
     # positive dir
     cur_coord = coord + delta_row
-    for c in range(col+1, GAME_COLS):
+    for c in range(col + 1, GAME_COLS):
         if len(field[c]) <= cur_coord or cur_coord < 0 or cur_coord >= GAME_ROWS:
             break
         if field[c][cur_coord] != player:
@@ -177,7 +176,7 @@ def move(state_int, col, player):
     assert isinstance(state_int, int)
     assert isinstance(col, int)
     assert 0 <= col < GAME_COLS
-    assert player == PLAYER_BLACK or player == PLAYER_WHITE
+    assert player in (PLAYER_BLACK, PLAYER_WHITE)
     field = decode_binary(state_int)
     assert len(field[col]) < GAME_ROWS
     field[col].append(player)

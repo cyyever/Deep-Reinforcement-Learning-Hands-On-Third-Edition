@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-import ptan
-import ptan.ignite as ptan_ignite
-import gymnasium as gym
 import argparse
 import random
 import time
-import torch
-import torch.optim as optim
-import torch.nn.functional as F
-
-from ignite.engine import Engine
 from types import SimpleNamespace
+
+import gymnasium as gym
+import ptan
+import ptan.ignite as ptan_ignite
+import torch
+import torch.nn.functional as F
+import torch.optim as optim
+from ignite.engine import Engine
 from lib import common, ppo
 
 N_ENVS = 8
@@ -19,7 +19,7 @@ NAME = "atari"
 HYPERPARAMS = {
     'ppo': SimpleNamespace(**{
         'env_name':         "SeaquestNoFrameskip-v4",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': 10000,
         'run_name':         'ppo',
         'lr':               1e-5,
@@ -33,7 +33,7 @@ HYPERPARAMS = {
     }),
     'noisynet': SimpleNamespace(**{
         'env_name':         "SeaquestNoFrameskip-v4",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': 10000,
         'run_name':         'noisynet',
         'lr':               1e-5,
@@ -47,7 +47,7 @@ HYPERPARAMS = {
     }),
     'distill': SimpleNamespace(**{
         'env_name':         "SeaquestNoFrameskip-v4",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': 10000,
         'run_name':         'distill',
         'lr':               5e-5,
@@ -179,7 +179,6 @@ if __name__ == "__main__":
         })
 
         return res
-
 
     engine = Engine(process_batch)
     common.setup_ignite(engine, params, exp_source, NAME + "_" + args.name, extra_metrics=(

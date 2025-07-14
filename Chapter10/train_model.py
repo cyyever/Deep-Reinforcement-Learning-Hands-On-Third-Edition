@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-import ptan
-import pathlib
 import argparse
-from gymnasium import wrappers
-import numpy as np
+import pathlib
 
+import numpy as np
+import ptan
 import torch
 import torch.optim as optim
-
-from ignite.engine import Engine
+from gymnasium import wrappers
 from ignite.contrib.handlers import tensorboard_logger as tb_logger
-
-from lib import environ, data, models, common, validation
+from ignite.engine import Engine
+from lib import common, data, environ, models, validation
 
 SAVES_DIR = pathlib.Path("saves")
 STOCKS = "data/YNDX_160101_161231.csv"
@@ -121,7 +119,7 @@ if __name__ == "__main__":
             print("%d: Best mean value updated %.3f -> %.3f" % (
                 engine.state.iteration, engine.state.best_mean_val,
                 mean_val))
-            path = saves_path / ("mean_value-%.3f.data" % mean_val)
+            path = saves_path / (f"mean_value-{mean_val:.3f}.data")
             torch.save(net.state_dict(), path)
             engine.state.best_mean_val = mean_val
 
@@ -139,11 +137,9 @@ if __name__ == "__main__":
         if getattr(engine.state, "best_val_reward", None) is None:
             engine.state.best_val_reward = val_reward
         if engine.state.best_val_reward < val_reward:
-            print("Best validation reward updated: {:.3f} -> {:.3f}, model saved".format(
-                engine.state.best_val_reward, val_reward
-            ))
+            print(f"Best validation reward updated: {engine.state.best_val_reward:.3f} -> {val_reward:.3f}, model saved")
             engine.state.best_val_reward = val_reward
-            path = saves_path / ("val_reward-%.3f.data" % val_reward)
+            path = saves_path / (f"val_reward-{val_reward:.3f}.data")
             torch.save(net.state_dict(), path)
 
     event = ptan.ignite.PeriodEvents.ITERS_10000_COMPLETED

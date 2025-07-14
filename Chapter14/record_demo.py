@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-import time
+import argparse
 import json
+import multiprocessing as mp
 import pathlib
 import pickle
-import argparse
+import time
+
+import bottle
 import gymnasium as gym
 import miniwob
-import bottle
-from miniwob.action import ActionTypes, ActionSpaceConfig
-import multiprocessing as mp
-
 from lib import demos
+from miniwob.action import ActionSpaceConfig, ActionTypes
 
 DEFAULT_GAME = 'click-tab-v1'
 
@@ -34,7 +34,6 @@ def server_proc(queue: mp.Queue):
 
     app.run(host="localhost", port=8032)
     pass
-
 
 
 if __name__ == "__main__":

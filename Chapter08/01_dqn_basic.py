@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
 import typing as tt
 
+import gymnasium as gym
+import ptan
 import torch
 import torch.optim as optim
-
 from ignite.engine import Engine
-
-from lib import dqn_model, common
+from lib import common, dqn_model
 
 NAME = "01_baseline"
 
@@ -28,7 +26,7 @@ BEST_PONG = common.Hyperparams(
 
 
 def train(params: common.Hyperparams,
-          device: torch.device, _: dict) -> tt.Optional[int]:
+          device: torch.device, _: dict) -> int | None:
     env = gym.make(params.env_name)
     env = ptan.common.wrappers.wrap_dqn(env)
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import csv
-import pathlib
 import argparse
+import csv
 import itertools
+import pathlib
 import typing as tt
 from dataclasses import dataclass
 
@@ -36,23 +36,23 @@ class Series:
         with path.open('wt', encoding='utf-8') as fd:
             writer = csv.DictWriter(fd, ('Wall time', 'Step', 'Value'))
             writer.writeheader()
-            for dt, s, v in zip(self.time_deltas, self.steps, self.values):
+            for dt, s, v in zip(self.time_deltas, self.steps, self.values, strict=False):
                 writer.writerow({
                     'Wall time': self.start_wall + dt,
                     'Step': s,
                     'Value': v,
                 })
 
-    def __iter__(self) -> tt.Generator[tt.Tuple[float, int, float], None, None]:
-        yield from zip(self.time_deltas, self.steps, self.values)
+    def __iter__(self) -> tt.Generator[tuple[float, int, float]]:
+        yield from zip(self.time_deltas, self.steps, self.values, strict=False)
 
 
 def mean_max_step(series: list[Series]) -> float:
     return sum(map(lambda s: s.steps[-1], series)) / len(series)
 
 
-def avg_entries(entries: tt.Tuple[tt.Optional[tt.Tuple[float, int, float]], ...],
-                do_sum: bool = False) -> tt.Tuple[float, int, float]:
+def avg_entries(entries: tuple[tuple[float, int, float] | None, ...],
+                do_sum: bool = False) -> tuple[float, int, float]:
     deltas = []
     steps = []
     values = []

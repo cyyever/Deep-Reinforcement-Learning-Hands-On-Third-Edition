@@ -24,7 +24,7 @@ class CubeEnv:
         self._encode_func = encode_func
 
     def __repr__(self):
-        return "CubeEnv(%r)" % self.name
+        return f"CubeEnv({self.name!r})"
 
     # wrapper functions
     def is_goal(self, state):
@@ -85,9 +85,9 @@ class CubeEnv:
             prev_action = action
             if return_inverse:
                 inv_action = self.inverse_action(action)
-                res = (depth+1, state, inv_action)
+                res = (depth + 1, state, inv_action)
             else:
-                res = (depth+1, state)
+                res = (depth + 1, state)
             result.append(res)
         return result
 

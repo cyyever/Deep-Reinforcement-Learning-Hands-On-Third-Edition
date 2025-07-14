@@ -1,15 +1,15 @@
 import sys
-import numpy as np
 
 import lib.dqn_extra
+import numpy as np
 
 sys.path.append("./")
 
 
 import matplotlib as mpl
+
 mpl.use("Agg")
 import matplotlib.pyplot as plt
-
 
 Vmax = 10
 Vmin = -10
@@ -19,7 +19,7 @@ DELTA_Z = (Vmax - Vmin) / (N_ATOMS - 1)
 
 def save_distr(src, proj, name):
     plt.clf()
-    p = np.arange(Vmin, Vmax+DELTA_Z, DELTA_Z)
+    p = np.arange(Vmin, Vmax + DELTA_Z, DELTA_Z)
     plt.subplot(2, 1, 1)
     plt.bar(p, src, width=0.5)
     plt.title("Source")
@@ -31,18 +31,18 @@ def save_distr(src, proj, name):
 
 if __name__ == "__main__":
     np.random.seed(123)
-    atoms = np.arange(Vmin, Vmax+DELTA_Z, DELTA_Z)
+    atoms = np.arange(Vmin, Vmax + DELTA_Z, DELTA_Z)
 
     # single peak distribution
     src_hist = np.zeros(shape=(1, N_ATOMS), dtype=np.float32)
-    src_hist[0, N_ATOMS//2+1] = 1.0
+    src_hist[0, N_ATOMS // 2 + 1] = 1.0
     proj_hist = lib.dqn_extra.distr_projection(src_hist, np.array([2], dtype=np.float32), np.array([False]),
                                                Vmin, Vmax, N_ATOMS, gamma=0.9)
     save_distr(src_hist[0], proj_hist[0], "peak-r=2")
 
     # normal distribution
     data = np.random.normal(size=1000, scale=3)
-    hist = np.histogram(data, normed=True, bins=np.arange(Vmin - DELTA_Z/2, Vmax + DELTA_Z*3/2, DELTA_Z))
+    hist = np.histogram(data, normed=True, bins=np.arange(Vmin - DELTA_Z / 2, Vmax + DELTA_Z * 3 / 2, DELTA_Z))
 
     src_hist = hist[0]
     proj_hist = lib.dqn_extra.distr_projection(np.array([src_hist]), np.array([2], dtype=np.float32), np.array([False]),

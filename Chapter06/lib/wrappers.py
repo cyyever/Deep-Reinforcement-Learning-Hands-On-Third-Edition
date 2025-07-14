@@ -1,8 +1,9 @@
-import typing as tt
-import gymnasium as gym
-from gymnasium import spaces
 import collections
+import typing as tt
+
+import gymnasium as gym
 import numpy as np
+from gymnasium import spaces
 from stable_baselines3.common import atari_wrappers
 
 
@@ -32,8 +33,8 @@ class BufferWrapper(gym.ObservationWrapper):
         self.observation_space = new_obs
         self.buffer = collections.deque(maxlen=n_steps)
 
-    def reset(self, *, seed: tt.Optional[int] = None, options: tt.Optional[dict[str, tt.Any]] = None):
-        for _ in range(self.buffer.maxlen-1):
+    def reset(self, *, seed: int | None = None, options: dict[str, tt.Any] | None = None):
+        for _ in range(self.buffer.maxlen - 1):
             self.buffer.append(self.env.observation_space.low)
         obs, extra = self.env.reset()
         return self.observation(obs), extra

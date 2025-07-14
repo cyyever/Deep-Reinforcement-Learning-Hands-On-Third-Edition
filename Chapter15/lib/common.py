@@ -1,12 +1,10 @@
 import gymnasium as gym
 import numpy as np
-import torch
 import ptan
-
+import torch
 
 ENV_ID = "MinitaurBulletEnv-v0"
 ENTRY = "pybullet_envs.bullet.minitaur_gym_env:MinitaurBulletEnv"
-
 
 
 def register_env():

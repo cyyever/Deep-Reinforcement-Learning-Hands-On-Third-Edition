@@ -1,14 +1,17 @@
 """
 MuZero implementation.
 """
-from dataclasses import dataclass
 import math as m
 import typing as tt
+from collections import deque
+from dataclasses import dataclass
+
 import numpy as np
 import torch
 import torch.nn as nn
 
 from lib import game
+
 # reuse function as net input matches
 from lib.model import state_lists_to_batch
 
@@ -17,6 +20,7 @@ HIDDEN_STATE_SIZE = 64
 NUM_FILTERS = 64
 
 Action = int
+
 
 @dataclass
 class MuZeroParams:
@@ -32,7 +36,6 @@ class MuZeroParams:
     pb_c_init: float = 1.25
 
     dev: torch.device = torch.device("cpu")
-
 
 
 class MinMaxStats:
@@ -56,7 +59,7 @@ class MCTSNode:
         self.visit_count = 0
         self.value_sum = 0.0
         self.prior = prior
-        self.children: tt.Dict[Action, MCTSNode] = {}
+        self.children: dict[Action, MCTSNode] = {}
         # node is not expanded, so has no hidden state
         self.h = None
         # predicted reward
@@ -71,7 +74,7 @@ class MCTSNode:
         return 0 if not self.visit_count else self.value_sum / self.visit_count
 
     def select_child(self, params: MuZeroParams, min_max: MinMaxStats) -> \
-            tt.Tuple[Action, "MCTSNode"]:
+            tuple[Action, "MCTSNode"]:
         max_ucb, best_action, best_node = None, None, None
         for action, node in self.children.items():
             ucb = ucb_value(params, self, node, min_max)
@@ -110,7 +113,7 @@ class ReprModel(nn.Module):
     """
     Representation model, maps observations into the hidden state
     """
-    def __init__(self, input_shape: tt.Tuple[int, ...]):
+    def __init__(self, input_shape: tuple[int, ...]):
         super().__init__()
         self.conv_in = nn.Sequential(
             nn.Conv2d(input_shape[0], NUM_FILTERS, kernel_size=3, padding=1),
@@ -188,7 +191,7 @@ class PredModel(nn.Module):
             nn.Linear(128, 1),
         )
 
-    def forward(self, x) -> tt.Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x) -> tuple[torch.Tensor, torch.Tensor]:
         """
         Returns policy and value from the hidden state
         """
@@ -217,7 +220,7 @@ class DynamicsModel(nn.Module):
         )
 
     def forward(self, h: torch.Tensor, a: torch.Tensor) -> \
-            tt.Tuple[torch.Tensor, torch.Tensor]:
+            tuple[torch.Tensor, torch.Tensor]:
         """
         Forward pass of dynamics model
         :param h: batch of hidden states
@@ -229,7 +232,7 @@ class DynamicsModel(nn.Module):
 
 
 class MuZeroModels:
-    def __init__(self, input_shape: tt.Tuple[int, ...], actions: int):
+    def __init__(self, input_shape: tuple[int, ...], actions: int):
         self.repr = ReprModel(input_shape)
         self.pred = PredModel(actions)
         self.dynamics = DynamicsModel(actions)
@@ -244,7 +247,7 @@ class MuZeroModels:
         self.pred.load_state_dict(src.pred.state_dict())
         self.dynamics.load_state_dict(src.dynamics.state_dict())
 
-    def get_state_dict(self) -> tt.Dict[str, dict]:
+    def get_state_dict(self) -> dict[str, dict]:
         return {
             "repr": self.repr.state_dict(),
             "pred": self.pred.state_dict(),
@@ -316,7 +319,6 @@ def make_expanded_root(player_idx: int, game_state_int: int, params: MuZeroParam
     return root
 
 
-
 def expand_node(parent: MCTSNode, node: MCTSNode, last_action: Action,
                 params: MuZeroParams, models: MuZeroModels) -> float:
     """
@@ -385,8 +387,8 @@ def run_mcts(player_idx: int, root_state_int: int, params: MuZeroParams,
 @torch.no_grad()
 def play_game(
         player1: MuZeroModels, player2: MuZeroModels, params: MuZeroParams,
-        temperature: float, init_state: tt.Optional[int] = None
-) -> tt.Tuple[int, Episode]:
+        temperature: float, init_state: int | None = None
+) -> tuple[int, Episode]:
     episode = Episode()
     state = game.INITIAL_STATE if init_state is None else init_state
     players = [player1, player2]
@@ -410,10 +412,7 @@ def play_game(
 
         new_state, won = game.move(state, action, player_idx)
         if won:
-            if player_idx == 0:
-                reward = 1
-            else:
-                reward = -1
+            reward = 1 if player_idx == 0 else -1
         step = EpisodeStep(state, player_idx, action, reward)
         episode.add_step(step, root_node)
         if won:
@@ -424,10 +423,10 @@ def play_game(
 
 
 def sample_batch(
-        episode_buffer: tt.Deque[Episode], batch_size: int, params: MuZeroParams,
-) -> tt.Tuple[
-    torch.Tensor, tt.Tuple[torch.Tensor, ...], tt.Tuple[torch.Tensor, ...],
-    tt.Tuple[torch.Tensor, ...], tt.Tuple[torch.Tensor, ...],
+        episode_buffer: deque[Episode], batch_size: int, params: MuZeroParams,
+) -> tuple[
+    torch.Tensor, tuple[torch.Tensor, ...], tuple[torch.Tensor, ...],
+    tuple[torch.Tensor, ...], tuple[torch.Tensor, ...],
 ]:
     """
     Sample training batch from episode buffer

@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
 import typing as tt
 
-import torch
-from torch import nn
-from torch import optim
+import gymnasium as gym
 import numpy as np
-
+import ptan
+import torch
 from ignite.engine import Engine
-
-from lib import dqn_extra, common
+from lib import common, dqn_extra
+from torch import nn, optim
 
 NAME = "06_dueling"
 
@@ -30,7 +27,7 @@ def evaluate_states(states: np.ndarray, net: nn.Module,
 
 
 def train(params: common.Hyperparams,
-          device: torch.device, extra: dict) -> tt.Optional[int]:
+          device: torch.device, extra: dict) -> int | None:
     env = gym.make(params.env_name)
     env = ptan.common.wrappers.wrap_dqn(env)
 

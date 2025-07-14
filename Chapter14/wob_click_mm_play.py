@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 import argparse
-import gym
-import universe
-import numpy as np
 
+import gym
+import numpy as np
 import torch
 import torch.nn.functional as F
-
-from lib import wob_vnc, model_vnc
-
+import universe
+from lib import model_vnc, wob_vnc
 
 ENV_NAME = "wob.mini.ClickTab-v0"
 REMOTE_ADDR = 'vnc://gpu:5910+15910'

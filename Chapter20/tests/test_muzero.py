@@ -1,6 +1,6 @@
 import numpy as np
-from lib import muzero as mu
 from lib import game
+from lib import muzero as mu
 
 
 def test_node():

@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
 import typing as tt
-import gymnasium as gym
 from collections import defaultdict
+
+import gymnasium as gym
 from torch.utils.tensorboard.writer import SummaryWriter
 
 ENV_NAME = "FrozenLake-v1"
-#ENV_NAME = "FrozenLake8x8-v1"      # uncomment for larger version
+# ENV_NAME = "FrozenLake8x8-v1"      # uncomment for larger version
 GAMMA = 0.9
 ALPHA = 0.2
 TEST_EPISODES = 20
 
 State = int
 Action = int
-ValuesKey = tt.Tuple[State, Action]
+ValuesKey = tuple[State, Action]
+
 
 class Agent:
     def __init__(self):
         self.env = gym.make(ENV_NAME)
         self.state, _ = self.env.reset()
-        self.values: tt.Dict[ValuesKey] = defaultdict(float)
+        self.values: dict[ValuesKey] = defaultdict(float)
 
-    def sample_env(self) -> tt.Tuple[State, Action, float, State]:
+    def sample_env(self) -> tuple[State, Action, float, State]:
         action = self.env.action_space.sample()
         old_state = self.state
         new_state, reward, is_done, is_tr, _ = self.env.step(action)
@@ -30,7 +32,7 @@ class Agent:
             self.state = new_state
         return old_state, action, float(reward), new_state
 
-    def best_value_and_action(self, state: State) -> tt.Tuple[float, Action]:
+    def best_value_and_action(self, state: State) -> tuple[float, Action]:
         best_value, best_action = None, None
         for action in range(self.env.action_space.n):
             action_value = self.values[(state, action)]
@@ -44,7 +46,7 @@ class Agent:
         new_val = reward + GAMMA * best_val
         old_val = self.values[(state, action)]
         key = (state, action)
-        self.values[key] = old_val * (1-ALPHA) + new_val * ALPHA
+        self.values[key] = old_val * (1 - ALPHA) + new_val * ALPHA
 
     def play_episode(self, env: gym.Env) -> float:
         total_reward = 0.0

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import argparse
-from textworld import gym, EnvInfos
-from textworld.gym import register_game
-from langchain_openai import ChatOpenAI
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_openai import ChatOpenAI
+from textworld import EnvInfos, gym
+from textworld.gym import register_game
 
 
 def play_game(env, max_steps: int = 20) -> bool:

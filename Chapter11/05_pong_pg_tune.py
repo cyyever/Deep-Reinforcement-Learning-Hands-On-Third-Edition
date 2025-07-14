@@ -1,26 +1,25 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-import numpy as np
 import argparse
 import collections
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
 import torch.nn.functional as F
 import torch.nn.utils as nn_utils
 import torch.optim as optim
+from lib import common
 from ray import tune
 
-from lib import common
-
 GAMMA = 0.99
-#LEARNING_RATE = 0.0001
-#ENTROPY_BETA = 0.02
+# LEARNING_RATE = 0.0001
+# ENTROPY_BETA = 0.02
 BATCH_SIZE = 8
 
-#REWARD_STEPS = 10
+# REWARD_STEPS = 10
 BASELINE_STEPS = 1000000
-#GRAD_L2_CLIP = 0.1
+# GRAD_L2_CLIP = 0.1
 EVAL_STEPS = 1_000_000
 
 ENV_COUNT = 32

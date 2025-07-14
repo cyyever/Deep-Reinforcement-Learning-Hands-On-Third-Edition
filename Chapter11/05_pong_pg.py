@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-import numpy as np
 import argparse
 import collections
-from torch.utils.tensorboard.writer import SummaryWriter
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
 import torch.nn.functional as F
 import torch.nn.utils as nn_utils
 import torch.optim as optim
-
 from lib import common
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 LEARNING_RATE = 0.00010792
@@ -87,9 +86,8 @@ if __name__ == "__main__":
 
             # handle new rewards
             new_rewards = exp_source.pop_total_rewards()
-            if new_rewards:
-                if tracker.reward(new_rewards[0], step_idx):
-                    break
+            if new_rewards and tracker.reward(new_rewards[0], step_idx):
+                break
 
             if len(batch_states) < BATCH_SIZE:
                 continue

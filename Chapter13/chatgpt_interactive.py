@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import textwrap
-from textworld import gym, EnvInfos
+
+from textworld import EnvInfos, gym
 from textworld.gym import register_game
 
 
@@ -18,7 +19,7 @@ def play_game(env, max_steps: int = 20) -> bool:
     
     What command do you want to execute next? Reply with 
     just a command in lowercase and nothing else. 
-    """)  % (info['objective'], info['description']))
+    """) % (info['objective'], info['description']))
 
     print("=== Send this to chat.openai.com and type the reply...")
 

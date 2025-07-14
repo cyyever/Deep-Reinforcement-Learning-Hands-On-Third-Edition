@@ -3,14 +3,11 @@ import argparse
 import pathlib
 
 import gymnasium as gym
-
-from lib import common, rlhf
-import ptan
-
 import numpy as np
+import ptan
 import torch
 import torch.nn.functional as F
-
+from lib import common, rlhf
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

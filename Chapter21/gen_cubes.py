@@ -7,10 +7,9 @@ import random
 
 from libcube import cubes
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--env", required=True, help="Type of env to train, supported types=%s" % cubes.names())
+    parser.add_argument("-e", "--env", required=True, help=f"Type of env to train, supported types={cubes.names()}")
     parser.add_argument("-n", "--number", type=int, default=10, help="Amount of scramble rounds, default=10")
     parser.add_argument("-d", "--depth", type=int, default=100, help="Scramble depth, default=10")
     parser.add_argument("--seed", type=int, default=42, help="Seed to use, if zero, no seed used. default=42")
@@ -23,7 +22,7 @@ if __name__ == "__main__":
     cube_env = cubes.get(args.env)
     assert isinstance(cube_env, cubes.CubeEnv)
 
-    with open(args.output, "w+t", encoding="utf-8") as fd_out:
+    with open(args.output, "w+", encoding="utf-8") as fd_out:
         for _ in range(args.number):
             s = cube_env.initial_state
             path = []

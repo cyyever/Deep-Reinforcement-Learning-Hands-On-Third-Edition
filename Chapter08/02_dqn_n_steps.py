@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
 import typing as tt
 
+import gymnasium as gym
+import ptan
 import torch
 import torch.optim as optim
-
 from ignite.engine import Engine
-
-from lib import dqn_model, common
+from lib import common, dqn_model
 
 NAME = "02_n_steps"
 DEFAULT_STEPS = 3
 
-BEST_PONG: tt.Dict[int, common.Hyperparams] = {
+BEST_PONG: dict[int, common.Hyperparams] = {
     2: common.Hyperparams(
         env_name="PongNoFrameskip-v4",
         stop_reward=18.0,
@@ -57,7 +55,7 @@ BEST_PONG: tt.Dict[int, common.Hyperparams] = {
 
 
 def train(params: common.Hyperparams,
-          device: torch.device, extra: dict) -> tt.Optional[int]:
+          device: torch.device, extra: dict) -> int | None:
     n_steps = extra["n"]
 
     env = gym.make(params.env_name)

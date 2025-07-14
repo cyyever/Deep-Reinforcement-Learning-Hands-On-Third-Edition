@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 import sys
+
 sys.path.append(".")
 import argparse
+import json
 import pathlib
 import pickle
-import json
-from lib import demos
 
+from lib import demos
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

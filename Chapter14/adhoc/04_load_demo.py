@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import sys
+
 sys.path.append(".")
 import argparse
 import pathlib
 
 from lib import demos
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

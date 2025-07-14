@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-from ptan.experience import VectorExperienceSourceFirstLast
-from ptan.common.utils import TBMeanTracker
-import numpy as np
 import argparse
-from torch.utils.tensorboard.writer import SummaryWriter
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
-import torch.nn.utils as nn_utils
 import torch.nn.functional as F
+import torch.nn.utils as nn_utils
 import torch.optim as optim
-
 from lib import common
+from ptan.common.utils import TBMeanTracker
+from ptan.experience import VectorExperienceSourceFirstLast
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 LEARNING_RATE = 0.001

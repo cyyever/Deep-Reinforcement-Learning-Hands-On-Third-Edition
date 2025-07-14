@@ -1,8 +1,8 @@
 import sys
 import time
-import numpy as np
 import typing as tt
 
+import numpy as np
 import torch
 import torch.nn as nn
 from ptan.experience import ExperienceFirstLast
@@ -28,7 +28,7 @@ class RewardTracker:
         self.ts_frame = frame
         self.ts = time.time()
         mean_reward = np.mean(self.total_rewards[-100:])
-        epsilon_str = "" if epsilon is None else ", eps %.2f" % epsilon
+        epsilon_str = "" if epsilon is None else f", eps {epsilon:.2f}"
         print("%d: done %d games, mean reward %.3f, speed %.2f f/s%s" % (
             frame, len(self.total_rewards), mean_reward, speed, epsilon_str
         ))
@@ -45,7 +45,7 @@ class RewardTracker:
 
 
 class AtariA2C(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
+    def __init__(self, input_shape: tuple[int, ...], n_actions: int):
         super().__init__()
 
         self.conv = nn.Sequential(
@@ -70,7 +70,7 @@ class AtariA2C(nn.Module):
             nn.Linear(512, 1)
         )
 
-    def forward(self, x: torch.ByteTensor) -> tt.Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.ByteTensor) -> tuple[torch.Tensor, torch.Tensor]:
         xx = x / 255
         conv_out = self.conv(xx)
         return self.policy(conv_out), self.value(conv_out)

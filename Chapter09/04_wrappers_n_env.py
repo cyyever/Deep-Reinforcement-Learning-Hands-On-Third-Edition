@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-import ptan.ignite as ptan_ignite
-from datetime import datetime, timedelta
 import argparse
 import random
 import warnings
+from datetime import datetime, timedelta
 
+import gymnasium as gym
+import ptan
+import ptan.ignite as ptan_ignite
 import torch
 import torch.optim as optim
-
+from ignite.contrib.handlers import tensorboard_logger as tb_logger
 from ignite.engine import Engine
 from ignite.metrics import RunningAverage
-from ignite.contrib.handlers import tensorboard_logger as tb_logger
-
-from lib import dqn_model, common, atari_wrappers
+from lib import atari_wrappers, common, dqn_model
 
 NAME = "04_wrappers_n_env"
 

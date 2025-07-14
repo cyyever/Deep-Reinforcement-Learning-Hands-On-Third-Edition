@@ -1,10 +1,13 @@
 import gymnasium as gym
 import numpy as np
-
-from ptan.common.wrappers import ImageToPyTorch, BufferWrapper
+from ptan.common.wrappers import BufferWrapper, ImageToPyTorch
 from stable_baselines3.common.atari_wrappers import (
-    StickyActionEnv, NoopResetEnv, EpisodicLifeEnv,
-    FireResetEnv, WarpFrame, ClipRewardEnv
+    ClipRewardEnv,
+    EpisodicLifeEnv,
+    FireResetEnv,
+    NoopResetEnv,
+    StickyActionEnv,
+    WarpFrame,
 )
 from stable_baselines3.common.type_aliases import AtariStepReturn
 
@@ -34,7 +37,7 @@ class JustSkipEnv(gym.Wrapper[np.ndarray, int, np.ndarray, int]):
         info = {}
         obs = None
         terminated = truncated = False
-        for i in range(self._skip):
+        for _i in range(self._skip):
             obs, reward, terminated, truncated, info = self.env.step(action)
             done = terminated or truncated
             total_reward += float(reward)

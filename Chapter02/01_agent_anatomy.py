@@ -39,4 +39,4 @@ if __name__ == "__main__":
     while not env.is_done():
         agent.step(env)
 
-    print("Total reward got: %.4f" % agent.total_reward)
+    print(f"Total reward got: {agent.total_reward:.4f}")

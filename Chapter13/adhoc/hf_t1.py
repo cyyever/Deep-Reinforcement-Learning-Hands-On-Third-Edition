@@ -1,5 +1,5 @@
-from transformers import pipeline
 import numpy as np
+from transformers import pipeline
 
 if __name__ == "__main__":
     c = pipeline("feature-extraction")

@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 import gymnasium as gym
-import ptan
-from ptan.experience import ExperienceSourceFirstLast
 import numpy as np
-from torch.utils.tensorboard.writer import SummaryWriter
-
+import ptan
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from ptan.experience import ExperienceSourceFirstLast
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 LEARNING_RATE = 0.01

@@ -1,24 +1,22 @@
 #!/usr/bin/env python3
+import argparse
 import os
+from types import SimpleNamespace
 
 import ptan
-import torch
-import argparse
 import ptan.ignite as ptan_ignite
-
-from torch import optim
-from types import SimpleNamespace
-from lib import data, model, common
+import torch
 from ignite.engine import Engine
-
+from lib import common, data, model
+from torch import optim
 
 PARAMS = SimpleNamespace(**{
     'run_name':         'battle',
-    'stop_reward':      None,
+    'stop_reward': None,
     'replay_size':      1000000,
     'replay_initial':   100,
     'target_net_sync':  1000,
-    'epsilon_frames':   5*10**5,
+    'epsilon_frames':   5 * 10**5,
     'epsilon_start':    1.0,
     'epsilon_final':    0.02,
     'learning_rate':    1e-4,
@@ -159,19 +157,15 @@ if __name__ == "__main__":
         engine.state.metrics['test_a_reward'] = a_reward
         engine.state.metrics['test_b_reward'] = b_reward
         engine.state.metrics['test_steps'] = steps
-        print("Test done: got {:.3f} reward (a) vs {:.3f} reward (b) after {:.2f} steps".format(
-            a_reward, b_reward, steps
-        ))
+        print(f"Test done: got {a_reward:.3f} reward (a) vs {b_reward:.3f} reward (b) after {steps:.2f} steps")
 
         global best_test_reward
         if best_test_reward is None:
             best_test_reward = a_reward
         elif best_test_reward < a_reward:
-            print("Best test reward updated {:.3f} -> {:.3f}, save model".format(
-                best_test_reward, a_reward
-            ))
+            print(f"Best test reward updated {best_test_reward:.3f} -> {a_reward:.3f}, save model")
             best_test_reward = a_reward
-            torch.save(net.state_dict(), os.path.join(saves_path, "best_%.3f.dat" % a_reward))
+            torch.save(net.state_dict(), os.path.join(saves_path, f"best_{a_reward:.3f}.dat"))
 
     engine.run(common.batch_generator(buffer, PARAMS.replay_initial,
                                       PARAMS.batch_size))

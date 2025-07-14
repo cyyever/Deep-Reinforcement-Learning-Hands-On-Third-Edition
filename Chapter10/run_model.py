@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 import argparse
-import numpy as np
-
-from lib import environ, data, models
-
-import torch
 
 import matplotlib as mpl
+import numpy as np
+import torch
+from lib import data, environ, models
+
 mpl.use("Agg")
 import matplotlib.pyplot as plt
-
 
 EPSILON = 0.02
 
@@ -60,6 +58,6 @@ if __name__ == "__main__":
 
     plt.clf()
     plt.plot(rewards)
-    plt.title("Total reward, data=%s" % args.name)
+    plt.title(f"Total reward, data={args.name}")
     plt.ylabel("Reward, %")
-    plt.savefig("rewards-%s.png" % args.name)
+    plt.savefig(f"rewards-{args.name}.png")

@@ -1,6 +1,6 @@
 import math
-from torch.utils.tensorboard.writer import SummaryWriter
 
+from torch.utils.tensorboard.writer import SummaryWriter
 
 if __name__ == "__main__":
     writer = SummaryWriter()

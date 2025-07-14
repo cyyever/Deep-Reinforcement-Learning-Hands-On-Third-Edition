@@ -1,7 +1,7 @@
+import numpy as np
 import ptan
 import torch
 import torch.nn as nn
-import numpy as np
 
 
 class DQNModel(nn.Module):
@@ -28,7 +28,7 @@ class DQNModel(nn.Module):
 
 
 def unpack_batch(batch: list[ptan.experience.ExperienceFirstLast]):
-    states, actions, rewards, dones, last_states = [],[],[],[],[]
+    states, actions, rewards, dones, last_states = [], [], [], [], []
     for exp in batch:
         states.append(exp.state)
         actions.append(exp.action)

@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-from dataclasses import dataclass
-import time
 import argparse
-import numpy as np
+import time
+from dataclasses import dataclass
 
+import gymnasium as gym
+import numpy as np
 import torch
 import torch.nn as nn
+from lib import common
 from torch import multiprocessing as mp
 from torch import optim
-
-from lib import common
-
 from torch.utils.tensorboard.writer import SummaryWriter
 
 NOISE_STD = 0.001
@@ -19,6 +17,7 @@ LEARNING_RATE = 0.001
 PROCESSES_COUNT = 6
 ITERS_PER_UPDATE = 10
 MAX_ITERS = 100000
+
 
 @dataclass(frozen=True)
 class RewardsItem:
@@ -79,15 +78,15 @@ def train_step(optimizer: optim.Optimizer, net: Net, batch_noise: list[common.TN
     weighted_noise = None
     norm_reward = compute_centered_ranks(np.array(batch_reward))
 
-    for noise, reward in zip(batch_noise, norm_reward):
+    for noise, reward in zip(batch_noise, norm_reward, strict=False):
         if weighted_noise is None:
             weighted_noise = [reward * p_n for p_n in noise]
         else:
-            for w_n, p_n in zip(weighted_noise, noise):
+            for w_n, p_n in zip(weighted_noise, noise, strict=False):
                 w_n += reward * p_n
     m_updates = []
     optimizer.zero_grad()
-    for p, p_update in zip(net.parameters(), weighted_noise):
+    for p, p_update in zip(net.parameters(), weighted_noise, strict=False):
         update = p_update / (len(batch_reward) * noise_std)
         p.grad = -update
         m_updates.append(torch.norm(update))
@@ -116,7 +115,7 @@ def worker_func(params_queue: mp.Queue, rewards_queue: mp.Queue,
             neg_reward, neg_steps = common.eval_with_noise(env, net, neg_noise, noise_std,
                 get_max_action=False, device=device)
             rewards_queue.put(RewardsItem(seed=seed, pos_reward=pos_reward,
-                neg_reward=neg_reward, steps=pos_steps+neg_steps))
+                neg_reward=neg_reward, steps=pos_steps + neg_steps))
 
 
 if __name__ == "__main__":
@@ -129,7 +128,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     device = torch.device(args.dev)
 
-    writer = SummaryWriter(comment="-cheetah-es_lr={:.3e}_sigma={:.3e}".format(args.lr, args.noise_std))
+    writer = SummaryWriter(comment=f"-cheetah-es_lr={args.lr:.3e}_sigma={args.noise_std:.3e}")
     env = make_env()
     net = Net(env.observation_space.shape[0], env.action_space.shape[0])
     print(net)
@@ -194,6 +193,6 @@ if __name__ == "__main__":
         print("%d: reward=%.2f, speed=%.2f f/s, data_gather=%.3f, train=%.3f" % (
             step_idx, m_reward, speed, dt_data, dt_step))
 
-    for worker, p_queue in zip(workers, params_queues):
+    for worker, p_queue in zip(workers, params_queues, strict=False):
         p_queue.put(None)
         worker.join()

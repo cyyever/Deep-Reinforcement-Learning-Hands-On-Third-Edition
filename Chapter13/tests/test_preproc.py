@@ -1,21 +1,20 @@
-from pytest import mark
-
 from lib.preproc import RelativeDirectionWrapper
+from pytest import mark
 
 
 @mark.parametrize("abs_act, dir_name, exp_rel_act", [
     ("go north", "north", "go forward"),
     ("go south", "south", "go forward"),
-    ("go east",  "east",  "go forward"),
-    ("go east",  "north", "go right"),
-    ("go west",  "north", "go left"),
+    ("go east", "east", "go forward"),
+    ("go east", "north", "go right"),
+    ("go west", "north", "go left"),
     ("go south", "north", "go back"),
-    ("go west",  "east",  "go back"),
-    ("go west",  "south", "go right"),
-    ("go east",  "south", "go left"),
+    ("go west", "east", "go back"),
+    ("go west", "south", "go right"),
+    ("go east", "south", "go left"),
     ("go north", "south", "go back"),
-    ("go south", "east",  "go right"),
-    ("go south", "west",  "go left"),
+    ("go south", "east", "go right"),
+    ("go south", "west", "go left"),
 ])
 def test_abs_to_rel(abs_act, dir_name, exp_rel_act):
     dir_idx = RelativeDirectionWrapper.ABSOLUTE_DIRS.index(dir_name)
@@ -26,14 +25,14 @@ def test_abs_to_rel(abs_act, dir_name, exp_rel_act):
 
 @mark.parametrize("rel_act, dir_name, exp_abs_act", [
     ("go forward", "north", "go north"),
-    ("go right",   "north", "go east"),
-    ("go back",    "north", "go south"),
-    ("go left",    "north", "go west"),
+    ("go right", "north", "go east"),
+    ("go back", "north", "go south"),
+    ("go left", "north", "go west"),
 
     ("go forward", "east", "go east"),
-    ("go right",   "east", "go south"),
-    ("go back",    "east", "go west"),
-    ("go left",    "east", "go north"),
+    ("go right", "east", "go south"),
+    ("go back", "east", "go west"),
+    ("go left", "east", "go north"),
 ])
 def test_rel_to_abs(rel_act, dir_name, exp_abs_act):
     dir_idx = RelativeDirectionWrapper.ABSOLUTE_DIRS.index(dir_name)
@@ -44,14 +43,14 @@ def test_rel_to_abs(rel_act, dir_name, exp_abs_act):
 
 @mark.parametrize("rel_act, dir_name, exp_new_dir", [
     ("go forward", "north", "north"),
-    ("go right",   "north", "east"),
-    ("go left",    "north", "west"),
-    ("go back",    "north", "south"),
+    ("go right", "north", "east"),
+    ("go left", "north", "west"),
+    ("go back", "north", "south"),
 
     ("go forward", "west", "west"),
-    ("go right",   "west", "north"),
-    ("go left",    "west", "south"),
-    ("go back",    "west", "east"),
+    ("go right", "west", "north"),
+    ("go left", "west", "south"),
+    ("go back", "west", "east"),
 ])
 def test_rel_execute(rel_act, dir_name, exp_new_dir):
     dir_idx = RelativeDirectionWrapper.ABSOLUTE_DIRS.index(dir_name)

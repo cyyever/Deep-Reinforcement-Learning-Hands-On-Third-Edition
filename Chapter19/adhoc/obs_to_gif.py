@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-import pickle
 import argparse
 import pathlib
-from PIL import Image
+import pickle
 
+from PIL import Image
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

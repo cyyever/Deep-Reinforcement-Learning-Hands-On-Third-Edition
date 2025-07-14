@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import time
+
 import gymnasium as gym
 import miniwob
 from miniwob.action import ActionTypes

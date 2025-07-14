@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-from ptan.experience import VectorExperienceSourceFirstLast
-from ptan.common.utils import TBMeanTracker
-import numpy as np
 import argparse
 import pathlib
 import queue
 import typing as tt
-from torch.utils.tensorboard.writer import SummaryWriter
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
-import torch.nn.utils as nn_utils
 import torch.nn.functional as F
+import torch.nn.utils as nn_utils
 import torch.optim as optim
-
 from lib import common, rlhf
+from ptan.common.utils import TBMeanTracker
+from ptan.experience import VectorExperienceSourceFirstLast
+from torch.utils.tensorboard.writer import SummaryWriter
 
 # Limit of steps in episodes is needed, as sometimes agent leans
 # just to refill the oxigen and do nothing :)
@@ -24,7 +23,7 @@ from lib import common, rlhf
 TIME_LIMIT = 5000
 
 GAMMA = 0.99
-LEARNING_RATE          = 0.0007
+LEARNING_RATE = 0.0007
 LEARNING_RATE_FINETUNE = 0.00007
 ENTROPY_BETA = 0.01
 BATCH_SIZE = 128
@@ -34,13 +33,13 @@ REWARD_STEPS = 5
 CLIP_GRAD = 0.1
 
 TEST_EPISODES = 10
-TEST_EVERY_STEP = 100*BATCH_SIZE
+TEST_EVERY_STEP = 100 * BATCH_SIZE
 
 
-def make_env_func(env_idx: int, db_path: tt.Optional[str],
-                  reward_path: tt.Optional[str],
+def make_env_func(env_idx: int, db_path: str | None,
+                  reward_path: str | None,
                   dev: torch.device,
-                  metrics_queue: tt.Optional[queue.Queue]) -> \
+                  metrics_queue: queue.Queue | None) -> \
         tt.Callable[[], gym.Env]:
     def make_env() -> gym.Env:
         e = gym.make("SeaquestNoFrameskip-v4")
@@ -81,7 +80,7 @@ def test_model(
         dev: torch.device,
         net: common.AtariA2C,
         episodes: int = TEST_EPISODES
-) -> tt.Tuple[float, int]:
+) -> tuple[float, int]:
     """
     Test model for given amount of episodes
     :param env: test environment
@@ -174,7 +173,7 @@ if __name__ == "__main__":
     optimizer = optim.Adam(
         net.parameters(), lr=lr, eps=1e-5)
     scheduler = optim.lr_scheduler.PolynomialLR(
-        optimizer, total_iters=8*(10**7) / BATCH_SIZE)
+        optimizer, total_iters=8 * (10**7) / BATCH_SIZE)
 
     batch = []
     best_test_reward = 0.0

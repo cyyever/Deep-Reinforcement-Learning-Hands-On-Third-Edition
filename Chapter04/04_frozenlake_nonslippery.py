@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-import numpy as np
-import gymnasium as gym
-from dataclasses import dataclass
-import typing as tt
 import random
-from torch.utils.tensorboard.writer import SummaryWriter
+import typing as tt
+from dataclasses import dataclass
 
+import gymnasium as gym
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
+from torch.utils.tensorboard.writer import SummaryWriter
 
 HIDDEN_SIZE = 128
 BATCH_SIZE = 100
@@ -51,6 +50,7 @@ class EpisodeStep:
     observation: np.ndarray
     action: int
 
+
 @dataclass
 class Episode:
     reward: float
@@ -58,7 +58,7 @@ class Episode:
 
 
 def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> \
-        tt.Generator[list[Episode], None, None]:
+        tt.Generator[list[Episode]]:
     batch = []
     episode_reward = 0.0
     episode_steps = []
@@ -86,7 +86,7 @@ def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> \
 
 
 def filter_batch(batch: list[Episode], percentile: float) -> \
-        tt.Tuple[list[Episode], list[np.ndarray],
+        tuple[list[Episode], list[np.ndarray],
                  list[int], float]:
     def reward_fun(s):
         return s.reward * (GAMMA ** len(s.steps))
@@ -97,7 +97,7 @@ def filter_batch(batch: list[Episode], percentile: float) -> \
     train_act: list[int] = []
     elite_batch: list[Episode] = []
 
-    for example, discounted_reward in zip(batch, disc_rewards):
+    for example, discounted_reward in zip(batch, disc_rewards, strict=False):
         if discounted_reward > reward_bound:
             train_obs.extend(map(lambda step: step.observation,
                                  example.steps))

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 MEAN = 10
 SAMPLES = 1000000

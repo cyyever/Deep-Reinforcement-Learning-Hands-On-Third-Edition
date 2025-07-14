@@ -1,12 +1,11 @@
 import collections
-import numpy as np
-
 import typing as tt
+
+import numpy as np
 import torch
 import torch.nn as nn
 
 from lib import game, mcts
-
 
 OBS_SHAPE = (2, game.GAME_ROWS, game.GAME_COLS)
 NUM_FILTERS = 64
@@ -118,7 +117,7 @@ def state_lists_to_batch(state_lists, who_moves_lists, device="cpu"):
     assert isinstance(state_lists, list)
     batch_size = len(state_lists)
     batch = np.zeros((batch_size,) + OBS_SHAPE, dtype=np.float32)
-    for idx, (state, who_move) in enumerate(zip(state_lists, who_moves_lists)):
+    for idx, (state, who_move) in enumerate(zip(state_lists, who_moves_lists, strict=False)):
         _encode_list_state(batch[idx], state, who_move)
     return torch.tensor(batch).to(device)
 
@@ -148,10 +147,10 @@ def state_lists_to_batch(state_lists, who_moves_lists, device="cpu"):
 #
 
 
-def play_game(mcts_stores: tt.Optional[mcts.MCTS | list[mcts.MCTS]],
-              replay_buffer: tt.Optional[collections.deque], net1: Net, net2: Net,
+def play_game(mcts_stores: mcts.MCTS | list[mcts.MCTS] | None,
+              replay_buffer: collections.deque | None, net1: Net, net2: Net,
               steps_before_tau_0: int, mcts_searches: int, mcts_batch_size: int,
-              net1_plays_first: tt.Optional[bool] = None,
+              net1_plays_first: bool | None = None,
               device: torch.device = torch.device("cpu")):
     """
     Play one single game, memorizing transitions into the replay buffer
@@ -193,7 +192,7 @@ def play_game(mcts_stores: tt.Optional[mcts.MCTS | list[mcts.MCTS]],
             result = 1
             net1_result = 1 if cur_player == 0 else -1
             break
-        cur_player = 1-cur_player
+        cur_player = 1 - cur_player
         # check the draw case
         if len(game.possible_moves(state)) == 0:
             result = 0

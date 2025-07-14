@@ -1,9 +1,9 @@
 import typing as tt
+
+import gymnasium as gym
+import numpy as np
 import torch
 from torch import nn
-import numpy as np
-import gymnasium as gym
-
 
 TNoise = list[torch.Tensor]
 
@@ -11,7 +11,7 @@ TNoise = list[torch.Tensor]
 def sample_noise(
         net: nn.Module,
         device: torch.device = torch.device('cpu')
-) -> tt.Tuple[TNoise, TNoise]:
+) -> tuple[TNoise, TNoise]:
     pos = []
     neg = []
     for p in net.parameters():
@@ -22,7 +22,7 @@ def sample_noise(
 
 
 def evaluate(env: gym.Env, net: nn.Module, get_max_action: bool = True,
-             device: torch.device = torch.device('cpu')) -> tt.Tuple[float, int]:
+             device: torch.device = torch.device('cpu')) -> tuple[float, int]:
     obs, _ = env.reset()
     reward = 0.0
     steps = 0
@@ -43,9 +43,9 @@ def evaluate(env: gym.Env, net: nn.Module, get_max_action: bool = True,
 
 def eval_with_noise(env: gym.Env, net: nn.Module, noise: TNoise, noise_std: float,
         get_max_action: bool = True, device: torch.device = torch.device("cpu")
-) -> tt.Tuple[float, int]:
+) -> tuple[float, int]:
     old_params = net.state_dict()
-    for p, p_n in zip(net.parameters(), noise):
+    for p, p_n in zip(net.parameters(), noise, strict=False):
         p.data += noise_std * p_n
     r, s = evaluate(env, net, get_max_action=get_max_action, device=device)
     net.load_state_dict(old_params)

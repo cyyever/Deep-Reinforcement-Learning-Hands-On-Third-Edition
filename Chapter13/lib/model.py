@@ -1,12 +1,12 @@
-import gymnasium as gym
-import ptan
 import random
-import numpy as np
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
+import torch.distributions as t_distr
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.distributions as t_distr
 
 from . import preproc
 
@@ -125,7 +125,7 @@ def unpack_batch(batch: list[ptan.experience.ExperienceFirstLast],
         if prev_ofs == ofs:
             best_q.append(0.0)
         else:
-            q_vals = net.q_values(obs_t[obs_ofs:obs_ofs+1], commands_t[prev_ofs:ofs])
+            q_vals = net.q_values(obs_t[obs_ofs:obs_ofs + 1], commands_t[prev_ofs:ofs])
             best_q.append(max(q_vals))
             obs_ofs += 1
         prev_ofs = ofs
@@ -225,7 +225,7 @@ class CommandModel(nn.Module):
 class CmdAgent(ptan.agent.BaseAgent):
     def __init__(self, env, cmd: CommandModel,
                  preprocessor: preproc.Preprocessor,
-                 device = "cpu"):
+                 device="cpu"):
         self.env = env
         self.cmd = cmd
         self.prepr = preprocessor
@@ -268,9 +268,9 @@ def pretrain_loss(cmd: CommandModel, commands: list,
         if min_length is None or len(inp) < min_length:
             min_length = len(inp)
 
-    commands_batch = [c[:min_length-1]
+    commands_batch = [c[:min_length - 1]
                       for c in commands_batch]
-    target_batch = [c[:min_length-1]
+    target_batch = [c[:min_length - 1]
                     for c in target_batch]
 
     commands_t = torch.tensor(commands_batch, dtype=torch.long)
@@ -289,7 +289,7 @@ class CmdDQNAgent(ptan.agent.BaseAgent):
                  cmd_encoder: preproc.Encoder,
                  preprocessor: preproc.Preprocessor,
                  epsilon: float,
-                 device = "cpu"):
+                 device="cpu"):
         self.env = env
         self.net = net
         self.cmd = cmd
@@ -351,7 +351,7 @@ def unpack_batch_dqncmd(batch, prep: preproc.Preprocessor,
         for idx, next_obs_t, next_cmds in \
                 zip(not_done_indices,
                     next_observations_t,
-                    next_commands):
+                    next_commands, strict=False):
             next_embs_t = prep._apply_encoder(
                 next_cmds, cmd_encoder)
             q_vals = net.q_values_cmd(next_obs_t, next_embs_t)

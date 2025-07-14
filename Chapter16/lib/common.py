@@ -1,11 +1,10 @@
+import gymnasium as gym
 import numpy as np
+import ptan
 import torch
 import torch.distributions as distr
-import gymnasium as gym
-import ptan
 
 from lib import model
-
 
 ENV_IDS = {
     'cheetah': "HalfCheetahBulletEnv-v0",
@@ -92,7 +91,6 @@ def unpack_batch_sac(batch: list[ptan.experience.ExperienceFirstLast],
     return states_v, actions_v, ref_vals_v, ref_q_v
 
 
-
 def calc_adv_ref(trajectory: list[ptan.experience.Experience],
                  net_crt: model.ModelCritic, states_v: torch.Tensor, gamma: float,
                  gae_lambda: float, device: torch.device):
@@ -110,7 +108,7 @@ def calc_adv_ref(trajectory: list[ptan.experience.Experience],
     result_adv = []
     result_ref = []
     for val, next_val, (exp,) in zip(
-            reversed(values[:-1]), reversed(values[1:]), reversed(trajectory[:-1])):
+            reversed(values[:-1]), reversed(values[1:]), reversed(trajectory[:-1]), strict=False):
         if exp.done_trunc:
             delta = exp.reward - val
             last_gae = delta

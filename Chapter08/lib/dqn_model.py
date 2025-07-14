@@ -1,10 +1,11 @@
+import typing as tt
+
 import torch
 import torch.nn as nn
-import typing as tt
 
 
 class DQN(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...],
+    def __init__(self, input_shape: tuple[int, ...],
                  n_actions: int):
         super().__init__()
 

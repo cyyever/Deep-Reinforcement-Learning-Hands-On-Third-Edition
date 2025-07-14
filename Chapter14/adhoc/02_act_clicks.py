@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import time
+import typing as tt
 
-import numpy as np
 import gymnasium
 import miniwob
-import typing as tt
-from miniwob.action import ActionTypes, ActionSpaceConfig
+import numpy as np
+from miniwob.action import ActionSpaceConfig, ActionTypes
 
 RENDER_ENV = True
 
@@ -17,8 +17,7 @@ BINS_X = SIZE_X // BIN_DX
 BINS_Y = SIZE_Y // BIN_DY
 
 
-
-def close_bins(elems: tt.Tuple[dict, ...]) -> tt.Tuple[int, int]:
+def close_bins(elems: tuple[dict, ...]) -> tuple[int, int]:
     elem_ids = {e['ref']: e for e in elems}
     close_elem = None
     for e in elems:
@@ -31,7 +30,6 @@ def close_bins(elems: tt.Tuple[dict, ...]) -> tt.Tuple[int, int]:
     x = close_elem['left'][0] + close_elem['width'][0] / 2.0
     y = close_elem['top'][0] + close_elem['height'][0] / 2.0
     return x // BIN_DX, y // BIN_DY
-
 
 
 if __name__ == "__main__":

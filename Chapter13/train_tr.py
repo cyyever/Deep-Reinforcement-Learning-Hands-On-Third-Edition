@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
-from textworld import gym
-from textworld.gym import register_games
-import ptan
-import pathlib
 import argparse
+import pathlib
+
 import numpy as np
-
-from textworld import EnvInfos
-
-from lib import preproc, model, common
-
+import ptan
 import torch
 import torch.optim as optim
 from ignite.engine import Engine
-
+from lib import common, model, preproc
+from textworld import EnvInfos, gym
+from textworld.gym import register_games
 
 EXTRA_GAME_INFO = {
     "inventory": True,
@@ -29,13 +25,12 @@ LEARNING_RATE = 5e-5
 BATCH_SIZE = 64
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-g", "--game", default="simple",
                         help="Game prefix to be used during training, default=simple")
     parser.add_argument("--params", choices=list(common.PARAMS.keys()), default='small',
-                        help="Training params, could be one of %s" % (list(common.PARAMS.keys())))
+                        help=f"Training params, could be one of {list(common.PARAMS.keys())}")
     parser.add_argument("-s", "--suffices", type=int, default=1,
                         help="Count of game indices to use during training, default=1")
     parser.add_argument("-v", "--validation", default='-val',
@@ -48,10 +43,10 @@ if __name__ == "__main__":
     params = common.PARAMS[args.params]
 
     game_files = [
-        "games/{}{}.ulx".format(args.game, s)
-        for s in range(1, args.suffices+1)
+        f"games/{args.game}{s}.ulx"
+        for s in range(1, args.suffices + 1)
     ]
-    val_game_file = "games/{}{}.ulx".format(args.game, args.validation)
+    val_game_file = f"games/{args.game}{args.validation}.ulx"
     if not all(map(lambda p: pathlib.Path(p).exists(), game_files)):
         raise RuntimeError(f"Some game files from {game_files} "
                            f"not found! Please run make_games.sh")
@@ -155,8 +150,8 @@ if __name__ == "__main__":
         if best_val_reward is None:
             engine.state.best_val_reward = reward
         elif best_val_reward < reward:
-            print("Best validation reward updated: {} -> {}".format(best_val_reward, reward))
-            save_net_name = save_path / ("best_val_%.3f_n.dat" % reward)
+            print(f"Best validation reward updated: {best_val_reward} -> {reward}")
+            save_net_name = save_path / (f"best_val_{reward:.3f}_n.dat")
             torch.save(net.state_dict(), save_net_name)
             engine.state.best_val_reward = reward
 
@@ -164,7 +159,7 @@ if __name__ == "__main__":
     def best_reward_updated(trainer: Engine):
         reward = trainer.state.metrics['avg_reward']
         if reward > 0:
-            save_net_name = save_path / ("best_train_%.3f_n.dat" % reward)
+            save_net_name = save_path / (f"best_train_{reward:.3f}_n.dat")
             torch.save(net.state_dict(), save_net_name)
             print("%d: best avg training reward: %.3f, saved" % (
                 trainer.state.iteration, reward))

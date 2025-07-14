@@ -1,11 +1,10 @@
 """
 Classic cube 3x3
 """
-import enum
 import collections
+import enum
 
-from . import _env
-from . import _common
+from . import _common, _env
 
 # environment API
 State = collections.namedtuple("State", field_names=[
@@ -16,7 +15,7 @@ RenderedState = collections.namedtuple("RenderedState", field_names=['top', 'fro
 
 # initial (solved state)
 initial_state = State(corner_pos=tuple(range(8)), side_pos=tuple(range(12)),
-                      corner_ort=tuple([0]*8), side_ort=tuple([0]*12))
+                      corner_ort=tuple([0] * 8), side_ort=tuple([0] * 12))
 
 
 def is_initial(state):
@@ -48,12 +47,12 @@ class Action(enum.Enum):
 
 
 _inverse_action = {
-    Action.R: Action.r,   Action.r: Action.R,
-    Action.L: Action.l,   Action.l: Action.L,
-    Action.T: Action.t,   Action.t: Action.T,
-    Action.D: Action.d,   Action.d: Action.D,
-    Action.F: Action.f,   Action.f: Action.F,
-    Action.B: Action.b,   Action.b: Action.B,
+    Action.R: Action.r, Action.r: Action.R,
+    Action.L: Action.l, Action.l: Action.L,
+    Action.T: Action.t, Action.t: Action.T,
+    Action.D: Action.d, Action.d: Action.D,
+    Action.F: Action.f, Action.f: Action.F,
+    Action.B: Action.b, Action.b: Action.B,
 }
 
 
@@ -64,7 +63,7 @@ def inverse_action(action):
 
 def _flip(side_ort, sides):
     return [
-        o if idx not in sides else 1-o
+        o if idx not in sides else 1 - o
         for idx, o in enumerate(side_ort)
     ]
 
@@ -89,7 +88,7 @@ _transform_map = {
         ()
     ],
     Action.D: [
-        ((4, 5), (5,  6), (6, 7), (7, 4)),
+        ((4, 5), (5, 6), (6, 7), (7, 4)),
         ((8, 9), (9, 10), (10, 11), (11, 8)),
         (),
         ()
@@ -203,16 +202,16 @@ def render(state):
 
     sides = _init_sides()
 
-    for corner, orient, maps in zip(state.corner_pos, state.corner_ort, corner_maps):
+    for corner, orient, maps in zip(state.corner_pos, state.corner_ort, corner_maps, strict=False):
         cols = corner_colors[corner]
         cols = _common._map_orient(cols, orient)
-        for (arr_idx, index), col in zip(maps, cols):
+        for (arr_idx, index), col in zip(maps, cols, strict=False):
             sides[arr_idx][index] = col
 
-    for side, orient, maps in zip(state.side_pos, state.side_ort, side_maps):
+    for side, orient, maps in zip(state.side_pos, state.side_ort, side_maps, strict=False):
         cols = side_colors[side]
         cols = cols if orient == 0 else (cols[1], cols[0])
-        for (arr_idx, index), col in zip(maps, cols):
+        for (arr_idx, index), col in zip(maps, cols, strict=False):
             sides[arr_idx][index] = col
 
     return RenderedState(top=sides[0], left=sides[1], back=sides[2], front=sides[3],

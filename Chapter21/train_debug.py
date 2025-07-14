@@ -5,15 +5,12 @@ Ad-hoc utility to analyze trained model and various training process details
 import argparse
 import logging
 
-import torch
-import torch.nn.functional as F
-import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
-
-from libcube import cubes
-from libcube import model
-
+import seaborn as sns
+import torch
+import torch.nn.functional as F
+from libcube import cubes, model
 
 log = logging.getLogger("train_debug")
 
@@ -22,8 +19,8 @@ log = logging.getLogger("train_debug")
 MAX_DEPTH = 10
 ROUND_COUNTS = 100
 # debug params
-#MAX_DEPTH = 5
-#ROUND_COUNTS = 2
+# MAX_DEPTH = 5
+# ROUND_COUNTS = 2
 
 
 def gen_states(cube_env, max_depth, round_counts):
@@ -38,7 +35,7 @@ def gen_states(cube_env, max_depth, round_counts):
     for _ in range(round_counts):
         data = cube_env.scramble_cube(max_depth, return_inverse=True)
         for depth, state, inv_action in data:
-            result[depth-1].append((state, inv_action.value))
+            result[depth - 1].append((state, inv_action.value))
     return result
 
 
@@ -47,7 +44,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
     parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--env", required=True, help="Type of env to train, supported types=%s" % cubes.names())
+    parser.add_argument("-e", "--env", required=True, help=f"Type of env to train, supported types={cubes.names()}")
     parser.add_argument("-m", "--model", required=True, help="Model file to load")
     parser.add_argument("-o", "--output", required=True, help="Output prefix for plots")
     args = parser.parse_args()
@@ -69,8 +66,8 @@ if __name__ == "__main__":
     data = []
     for depth, states in enumerate(states_by_depth):
         for s, inv_action in states:
-            data.append((depth+1, s, inv_action))
-    depths, states, inv_actions = map(list, zip(*data))
+            data.append((depth + 1, s, inv_action))
+    depths, states, inv_actions = map(list, zip(*data, strict=False))
 
     # process states with net
     enc_states = model.encode_states(cube_env, states)

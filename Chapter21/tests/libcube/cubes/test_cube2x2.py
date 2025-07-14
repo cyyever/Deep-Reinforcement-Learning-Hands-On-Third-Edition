@@ -1,7 +1,7 @@
-import unittest
-import numpy as np
 import random
+import unittest
 
+import numpy as np
 from libcube.cubes import cube2x2
 
 

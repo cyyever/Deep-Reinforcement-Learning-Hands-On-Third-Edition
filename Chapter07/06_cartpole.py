@@ -1,12 +1,11 @@
 import gymnasium as gym
-from ptan.experience import ExperienceFirstLast
-import ptan
 import numpy as np
+import ptan
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
-
+import torch.optim as optim
+from ptan.experience import ExperienceFirstLast
 
 HIDDEN_SIZE = 128
 BATCH_SIZE = 16
@@ -79,7 +78,7 @@ if __name__ == "__main__":
         step += 1
         buffer.populate(1)
 
-        for reward, steps in exp_source.pop_rewards_steps():
+        for reward, _steps in exp_source.pop_rewards_steps():
             episode += 1
             print(f"{step}: episode {episode} done, reward={reward:.2f}, "
                   f"epsilon={selector.epsilon:.2f}")
@@ -87,7 +86,7 @@ if __name__ == "__main__":
         if solved:
             print("Whee!")
             break
-        if len(buffer) < 2*BATCH_SIZE:
+        if len(buffer) < 2 * BATCH_SIZE:
             continue
         batch = buffer.sample(BATCH_SIZE)
         states_v, actions_v, tgt_q_v = unpack_batch(batch, tgt_net.target_model, GAMMA)

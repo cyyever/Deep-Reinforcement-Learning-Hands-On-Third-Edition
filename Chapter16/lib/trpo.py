@@ -1,5 +1,4 @@
 import numpy as np
-
 import torch
 
 
@@ -26,7 +25,7 @@ def conjugate_gradients(Avp, b, nsteps, residual_tol=1e-10, device="cpu"):
     r = b.clone()
     p = b.clone()
     rdotr = torch.dot(r, r)
-    for i in range(nsteps):
+    for _i in range(nsteps):
         _Avp = Avp(p)
         alpha = rdotr / torch.dot(p, _Avp)
         x += alpha * p

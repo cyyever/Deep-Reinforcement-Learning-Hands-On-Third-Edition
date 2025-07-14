@@ -1,10 +1,11 @@
-import os
 import csv
 import glob
+import os
 import pathlib
-import numpy as np
 import typing as tt
 from dataclasses import dataclass
+
+import numpy as np
 
 
 @dataclass
@@ -35,8 +36,9 @@ def read_csv(file_path: pathlib.Path, sep: str = ',',
         count_filter = 0
         count_fixed = 0
         prev_vals = None
+
         def filter_func(v):
-            return abs(v-vals[0]) < 1e-8
+            return abs(v - vals[0]) < 1e-8
         for row in reader:
             vals = list(map(float, [row[idx] for idx in indices]))
             if filter_data and all(map(filter_func, vals[:-1])):
@@ -98,9 +100,9 @@ def price_files(dir_name: str) -> list[pathlib.Path]:
 
 def load_year_data(
         year: int, basedir: str = 'data'
-) -> tt.Dict[str, Prices]:
+) -> dict[str, Prices]:
     y = str(year)[-2:]
     result = {}
-    for path in glob.glob(os.path.join(basedir, "*_%s*.csv" % y)):
+    for path in glob.glob(os.path.join(basedir, f"*_{y}*.csv")):
         result[path] = load_relative(pathlib.Path(path))
     return result

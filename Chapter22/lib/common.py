@@ -1,13 +1,13 @@
-from datetime import timedelta, datetime
-from types import SimpleNamespace
-from collections.abc import Iterable
 import warnings
+from collections.abc import Iterable
+from datetime import datetime, timedelta
+from types import SimpleNamespace
 
 import ptan
 import ptan.ignite as ptan_ignite
+from ignite.contrib.handlers import tensorboard_logger as tb_logger
 from ignite.engine import Engine
 from ignite.metrics import RunningAverage
-from ignite.contrib.handlers import tensorboard_logger as tb_logger
 
 
 class EpsilonTracker:

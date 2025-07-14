@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
+import argparse
+import random
+import typing as tt
+import warnings
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+
 import gymnasium as gym
 import ptan
 import ptan.ignite as ptan_ignite
-from datetime import datetime, timedelta
-import argparse
-import random
-import warnings
-import typing as tt
-from dataclasses import dataclass
-import torch.multiprocessing as mp
-
 import torch
+import torch.multiprocessing as mp
 import torch.optim as optim
-
+from ignite.contrib.handlers import tensorboard_logger as tb_logger
 from ignite.engine import Engine
 from ignite.metrics import RunningAverage
-from ignite.contrib.handlers import tensorboard_logger as tb_logger
-
-from lib import dqn_model, common, atari_wrappers
+from lib import atari_wrappers, common, dqn_model
 
 NAME = "04_wrappers_parallel"
 
@@ -43,7 +41,7 @@ def play_func(params: common.Hyperparams, net: dqn_model.DQN,
         env, agent, gamma=params.gamma, env_seed=common.SEED)
 
     for frame_idx, exp in enumerate(exp_source):
-        epsilon_tracker.frame(frame_idx//2)
+        epsilon_tracker.frame(frame_idx // 2)
         exp_queue.put(exp)
         for reward, steps in exp_source.pop_rewards_steps():
             ee = EpisodeEnded(
@@ -67,7 +65,7 @@ class BatchGenerator:
         self._rewards_steps = []
         self.epsilon = None
 
-    def pop_rewards_steps(self) -> list[tt.Tuple[float, int]]:
+    def pop_rewards_steps(self) -> list[tuple[float, int]]:
         res = list(self._rewards_steps)
         self._rewards_steps.clear()
         return res

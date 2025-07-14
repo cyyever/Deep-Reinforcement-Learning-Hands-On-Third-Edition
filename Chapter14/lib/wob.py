@@ -1,11 +1,11 @@
 
-import gymnasium as gym
-from gymnasium import spaces
 import typing as tt
-import numpy as np
-import miniwob
-from miniwob.action import ActionTypes, ActionSpaceConfig
 
+import gymnasium as gym
+import miniwob
+import numpy as np
+from gymnasium import spaces
+from miniwob.action import ActionSpaceConfig, ActionTypes
 
 # Constants for MiniWoB
 WIDTH = 160
@@ -64,7 +64,7 @@ class MiniWoBClickWrapper(gym.ObservationWrapper):
         return MiniWoBClickWrapper(
             env, keep_text=keep_text, keep_obs=keep_obs, bin_size=bin_size)
 
-    def _observation(self, observation: dict) -> np.ndarray | tt.Tuple[np.ndarray, str]:
+    def _observation(self, observation: dict) -> np.ndarray | tuple[np.ndarray, str]:
         text = observation['utterance']
         scr = observation['screenshot']
         scr = np.transpose(scr, (2, 0, 1))
@@ -79,7 +79,7 @@ class MiniWoBClickWrapper(gym.ObservationWrapper):
             info[self.FULL_OBS_KEY] = obs
         return self._observation(obs), info
 
-    def step(self, action: int) -> tt.Tuple[
+    def step(self, action: int) -> tuple[
         gym.core.WrapperObsType, gym.core.SupportsFloat, bool, bool, dict[str, tt.Any]
     ]:
         b_x, b_y = action_to_bins(action, self.bin_size)
@@ -110,7 +110,7 @@ def coord_to_action(x: int, y: int, bin_size: int = BIN_SIZE) -> int:
     return x + (WIDTH // bin_size) * y
 
 
-def action_to_coord(action: int, bin_size: int = BIN_SIZE) -> tt.Tuple[int, int]:
+def action_to_coord(action: int, bin_size: int = BIN_SIZE) -> tuple[int, int]:
     """
     Convert click action to coords
     :param action: action from 0 to 255 (for bin=10)
@@ -122,7 +122,7 @@ def action_to_coord(action: int, bin_size: int = BIN_SIZE) -> tt.Tuple[int, int]
     return (b_x * bin_size) + d, Y_OFS + (b_y * bin_size) + d
 
 
-def action_to_bins(action: int, bin_size: int = BIN_SIZE) -> tt.Tuple[int, int]:
+def action_to_bins(action: int, bin_size: int = BIN_SIZE) -> tuple[int, int]:
     """
     Convert click action to coords
     :param action: action from 0 to 255 (for bin=10)

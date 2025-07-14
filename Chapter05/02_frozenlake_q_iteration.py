@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 import typing as tt
+from collections import Counter, defaultdict
+
 import gymnasium as gym
-from collections import defaultdict, Counter
 from torch.utils.tensorboard.writer import SummaryWriter
 
 ENV_NAME = "FrozenLake-v1"
-#ENV_NAME = "FrozenLake8x8-v1"      # uncomment for larger version
+# ENV_NAME = "FrozenLake8x8-v1"      # uncomment for larger version
 GAMMA = 0.9
 TEST_EPISODES = 20
 
 State = int
 Action = int
-RewardKey = tt.Tuple[State, Action, State]
-TransitKey = tt.Tuple[State, Action]
+RewardKey = tuple[State, Action, State]
+TransitKey = tuple[State, Action]
 
 
 class Agent:
     def __init__(self):
         self.env = gym.make(ENV_NAME)
         self.state, _ = self.env.reset()
-        self.rewards: tt.Dict[RewardKey, float] = defaultdict(float)
-        self.transits: tt.Dict[TransitKey, Counter] = \
+        self.rewards: dict[RewardKey, float] = defaultdict(float)
+        self.transits: dict[TransitKey, Counter] = \
             defaultdict(Counter)
-        self.values: tt.Dict[TransitKey, float] = defaultdict(float)
+        self.values: dict[TransitKey, float] = defaultdict(float)
 
     def play_n_random_steps(self, n: int):
         for _ in range(n):

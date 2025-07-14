@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import sys
+
 sys.path.append(".")
-import gymnasium as gym
-import pathlib
-import torch
 import argparse
+import pathlib
 
+import gymnasium as gym
+import torch
 from lib import rlhf
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

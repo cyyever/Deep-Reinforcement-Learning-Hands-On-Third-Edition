@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-import gymnasium as gym
 import time
-import numpy as np
 
+import gymnasium as gym
+import numpy as np
 import torch
 import torch.nn as nn
-
-from torch.utils.tensorboard.writer import SummaryWriter
-
 from lib import common
-
+from torch.utils.tensorboard.writer import SummaryWriter
 
 MAX_BATCH_EPISODES = 100
 MAX_BATCH_STEPS = 10000
 NOISE_STD = 0.001
 LEARNING_RATE = 0.001
-
 
 
 class Net(nn.Module):
@@ -41,14 +37,14 @@ def train_step(net: Net, batch_noise: list[common.TNoise], batch_reward: list[fl
     if abs(s) > 1e-6:
         norm_reward /= s
 
-    for noise, reward in zip(batch_noise, norm_reward):
+    for noise, reward in zip(batch_noise, norm_reward, strict=False):
         if weighted_noise is None:
             weighted_noise = [reward * p_n for p_n in noise]
         else:
-            for w_n, p_n in zip(weighted_noise, noise):
+            for w_n, p_n in zip(weighted_noise, noise, strict=False):
                 w_n += reward * p_n
     m_updates = []
-    for p, p_update in zip(net.parameters(), weighted_noise):
+    for p, p_update in zip(net.parameters(), weighted_noise, strict=False):
         update = p_update / (len(batch_reward) * NOISE_STD)
         p.data += LEARNING_RATE * update
         m_updates.append(torch.norm(update))

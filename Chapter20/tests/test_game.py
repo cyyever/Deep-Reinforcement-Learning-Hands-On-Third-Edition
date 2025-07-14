@@ -21,20 +21,20 @@ class TestBits(unittest.TestCase):
 
 class TestGameEncoding(unittest.TestCase):
     def test_simple_encode(self):
-        e = game.encode_lists([[]]*7)
+        e = game.encode_lists([[]] * 7)
         self.assertEqual(e, 0b000000000000000000000000000000000000000000110110110110110110110)
-        e = game.encode_lists([[1]*6]*7)
+        e = game.encode_lists([[1] * 6] * 7)
         self.assertEqual(e, 0b111111111111111111111111111111111111111111000000000000000000000)
-        e = game.encode_lists([[0]*6]*7)
+        e = game.encode_lists([[0] * 6] * 7)
         self.assertEqual(e, 0)
 
     def test_simple_decode(self):
         g = game.decode_binary(0b000000000000000000000000000000000000000000110110110110110110110)
-        self.assertEqual(g, [[]]*7)
+        self.assertEqual(g, [[]] * 7)
         g = game.decode_binary(0b111111111111111111111111111111111111111111000000000000000000000)
-        self.assertEqual(g, [[1]*6]*7)
+        self.assertEqual(g, [[1] * 6] * 7)
         g = game.decode_binary(0)
-        self.assertEqual(g, [[0]*6]*7)
+        self.assertEqual(g, [[0] * 6] * 7)
 
 
 class TestMoveFunctions(unittest.TestCase):
@@ -47,40 +47,40 @@ class TestMoveFunctions(unittest.TestCase):
         self.assertEqual(r, [0, 1, 2, 3, 4, 5, 6])
 
     def test_move_vertical_win(self):
-        f = game.encode_lists([[]]*7)
+        f = game.encode_lists([[]] * 7)
 
         f, won = game.move(f, 0, 1)
         self.assertFalse(won)
         l = game.decode_binary(f)
-        self.assertEqual(l, [[1]] + [[]]*6)
+        self.assertEqual(l, [[1]] + [[]] * 6)
 
         f, won = game.move(f, 0, 1)
         self.assertFalse(won)
         l = game.decode_binary(f)
-        self.assertEqual(l, [[1, 1]] + [[]]*6)
+        self.assertEqual(l, [[1, 1]] + [[]] * 6)
 
         f, won = game.move(f, 0, 1)
         self.assertFalse(won)
         l = game.decode_binary(f)
-        self.assertEqual(l, [[1, 1, 1]] + [[]]*6)
+        self.assertEqual(l, [[1, 1, 1]] + [[]] * 6)
 
         f, won = game.move(f, 0, 1)
         self.assertTrue(won)
         l = game.decode_binary(f)
-        self.assertEqual(l, [[1, 1, 1, 1]] + [[]]*6)
+        self.assertEqual(l, [[1, 1, 1, 1]] + [[]] * 6)
 
     def test_move_horizontal_win(self):
-        f = game.encode_lists([[]]*7)
+        f = game.encode_lists([[]] * 7)
 
         f, won = game.move(f, 0, 1)
         self.assertFalse(won)
         l = game.decode_binary(f)
-        self.assertEqual(l, [[1]] + [[]]*6)
+        self.assertEqual(l, [[1]] + [[]] * 6)
 
         f, won = game.move(f, 1, 1)
         self.assertFalse(won)
         l = game.decode_binary(f)
-        self.assertEqual(l, [[1], [1]] + [[]]*5)
+        self.assertEqual(l, [[1], [1]] + [[]] * 5)
 
         f, won = game.move(f, 3, 1)
         self.assertFalse(won)
@@ -130,5 +130,6 @@ class TestMoveFunctions(unittest.TestCase):
         s, won = game.move(f, 4, 0)
         self.assertTrue(won)
         self.assertEqual(s, 3531389463375529686)
+
 
 pass

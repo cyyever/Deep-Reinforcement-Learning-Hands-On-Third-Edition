@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-import os
-import ptan
-import time
-import gymnasium as gym
 import argparse
-from torch.utils.tensorboard.writer import SummaryWriter
+import os
+import time
 
-from lib import model, common
-
+import gymnasium as gym
 import numpy as np
+import ptan
 import torch
-import torch.optim as optim
 import torch.nn.functional as F
-
+import torch.optim as optim
+from lib import common, model
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 GAE_LAMBDA = 0.95
@@ -26,7 +24,6 @@ PPO_EPOCHES = 10
 PPO_BATCH_SIZE = 64
 
 TEST_ITERS = 100000
-
 
 
 if __name__ == "__main__":
@@ -74,7 +71,7 @@ if __name__ == "__main__":
         for step_idx, exp in enumerate(exp_source):
             rewards_steps = exp_source.pop_rewards_steps()
             if rewards_steps:
-                rewards, steps = zip(*rewards_steps)
+                rewards, steps = zip(*rewards_steps, strict=False)
                 writer.add_scalar("episode_steps", np.mean(steps), step_idx)
                 tracker.reward(np.mean(rewards), step_idx)
 
@@ -87,7 +84,7 @@ if __name__ == "__main__":
                 writer.add_scalar("test_steps", steps, step_idx)
                 if best_reward is None or best_reward < rewards:
                     if best_reward is not None:
-                        print("Best reward updated: {:.3f} -> {:.3f}".format(best_reward, rewards))
+                        print(f"Best reward updated: {best_reward:.3f} -> {rewards:.3f}")
                         name = "best_%+.3f_%d.dat" % (rewards, step_idx)
                         fname = os.path.join(save_path, name)
                         torch.save(net_act.state_dict(), fname)
@@ -120,7 +117,7 @@ if __name__ == "__main__":
             sum_loss_policy = 0.0
             count_steps = 0
 
-            for epoch in range(PPO_EPOCHES):
+            for _epoch in range(PPO_EPOCHES):
                 for batch_ofs in range(0, len(trajectory), PPO_BATCH_SIZE):
                     batch_l = batch_ofs + PPO_BATCH_SIZE
                     states_v = traj_states_v[batch_ofs:batch_l]

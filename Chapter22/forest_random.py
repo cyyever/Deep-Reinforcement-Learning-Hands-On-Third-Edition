@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+import pathlib
+
+import numpy as np
 from gymnasium.wrappers.monitoring.video_recorder import VideoRecorder
 from lib import data
 from PIL import Image
-import pathlib
-import numpy as np
 
 RENDER_DIR = "render"
 

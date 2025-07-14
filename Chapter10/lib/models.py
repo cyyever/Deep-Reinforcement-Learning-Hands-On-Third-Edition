@@ -31,7 +31,7 @@ class SimpleFFDQN(nn.Module):
 
 
 class DQNConv1D(nn.Module):
-    def __init__(self, shape: tt.Tuple[int, ...], actions_n: int):
+    def __init__(self, shape: tuple[int, ...], actions_n: int):
         super().__init__()
 
         self.conv = nn.Sequential(
@@ -54,7 +54,6 @@ class DQNConv1D(nn.Module):
             nn.ReLU(),
             nn.Linear(512, actions_n)
         )
-
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         conv_out = self.conv(x)

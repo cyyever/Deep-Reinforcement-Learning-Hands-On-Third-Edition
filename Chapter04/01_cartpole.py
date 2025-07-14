@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-import numpy as np
-import gymnasium as gym
-from dataclasses import dataclass
 import typing as tt
-from torch.utils.tensorboard.writer import SummaryWriter
+from dataclasses import dataclass
 
+import gymnasium as gym
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
+from torch.utils.tensorboard.writer import SummaryWriter
 
 HIDDEN_SIZE = 128
 BATCH_SIZE = 16
@@ -33,13 +32,14 @@ class EpisodeStep:
     observation: np.ndarray
     action: int
 
+
 @dataclass
 class Episode:
     reward: float
     steps: list[EpisodeStep]
 
 
-def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> tt.Generator[list[Episode], None, None]:
+def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> tt.Generator[list[Episode]]:
     batch = []
     episode_reward = 0.0
     episode_steps = []
@@ -67,7 +67,7 @@ def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> tt.Generator[lis
 
 
 def filter_batch(batch: list[Episode], percentile: float) -> \
-        tt.Tuple[torch.FloatTensor, torch.LongTensor, float, float]:
+        tuple[torch.FloatTensor, torch.LongTensor, float, float]:
     rewards = list(map(lambda s: s.reward, batch))
     reward_bound = float(np.percentile(rewards, percentile))
     reward_mean = float(np.mean(rewards))

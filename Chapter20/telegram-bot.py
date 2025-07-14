@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # This module requires python-telegram-bot
-import os
-import sys
+import argparse
+import configparser
+import datetime
 import glob
 import json
-import time
-import datetime
-import random
 import logging
-import numpy as np
-import configparser
-import argparse
+import os
+import random
+import sys
+import time
 
-from lib import game, model, mcts
+import numpy as np
+from lib import game, mcts, model
 
 MCTS_SEARCHES = 20
 MCTS_BATCH_SIZE = 4
@@ -76,8 +76,8 @@ class Session:
         board = "0123456\n-------\n" + l + "\n-------\n0123456"
         extra = ""
         if self.value is not None:
-            extra = "Position evaluation: %.2f\n" % float(self.value)
-        return extra + "<pre>%s</pre>" % board
+            extra = f"Position evaluation: {float(self.value):.2f}\n"
+        return extra + f"<pre>{board}</pre>"
 
 
 class PlayerBot:
@@ -130,7 +130,7 @@ class PlayerBot:
             "moves": session.moves,
             "state": session.state
         }
-        with open(self.log_file, "a+t", encoding='utf-8') as f:
+        with open(self.log_file, "a+", encoding='utf-8') as f:
             f.write(json.dumps(data, sort_keys=True) + '\n')
 
     def command_help(self, bot, update):
@@ -148,7 +148,6 @@ This bot understands the following commands:
 During the game, your moves are numbers of columns to drop the disk.
 """)
 
-
     def command_list(self, bot, update):
         if len(self.models) == 0:
             reply = ["There are no models currently available, sorry!"]
@@ -161,7 +160,7 @@ During the game, your moves are numbers of columns to drop the disk.
 
     def command_play(self, bot, update, args):
         chat_id = update.message.chat_id
-        player_id = "{}:{}".format(update.message.from_user.username, update.message.from_user.id)
+        player_id = f"{update.message.from_user.username}:{update.message.from_user.id}"
         try:
             model_id = int(args[0])
         except ValueError:

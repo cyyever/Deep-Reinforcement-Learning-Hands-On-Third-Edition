@@ -1,9 +1,10 @@
+import enum
 import typing as tt
+
 import gymnasium as gym
+import numpy as np
 from gymnasium import spaces
 from gymnasium.envs.registration import EnvSpec
-import enum
-import numpy as np
 
 from . import data
 
@@ -33,14 +34,14 @@ class State:
         self._offset = None
 
     def reset(self, prices: data.Prices, offset: int):
-        assert offset >= self.bars_count-1
+        assert offset >= self.bars_count - 1
         self.have_position = False
         self.open_price = 0.0
         self._prices = prices
         self._offset = offset
 
     @property
-    def shape(self) -> tt.Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         # [h, l, c] * bars + position_flag + rel_profit
         if self.volumes:
             return 4 * self.bars_count + 1 + 1,
@@ -53,7 +54,7 @@ class State:
         """
         res = np.ndarray(shape=self.shape, dtype=np.float32)
         shift = 0
-        for bar_idx in range(-self.bars_count+1, 1):
+        for bar_idx in range(-self.bars_count + 1, 1):
             ofs = self._offset + bar_idx
             res[shift] = self._prices.high[ofs]
             shift += 1
@@ -80,7 +81,7 @@ class State:
         rel_close = self._prices.close[self._offset]
         return open * (1.0 + rel_close)
 
-    def step(self, action: Actions) -> tt.Tuple[float, bool]:
+    def step(self, action: Actions) -> tuple[float, bool]:
         """
         Perform one step in our price, adjust offset, check for the end of prices
         and handle position change
@@ -105,7 +106,7 @@ class State:
         self._offset += 1
         prev_close = close
         close = self._cur_close()
-        done |= self._offset >= self._prices.close.shape[0]-1
+        done |= self._offset >= self._prices.close.shape[0] - 1
 
         if self.have_position and not self.reward_on_close:
             reward += 100.0 * (close / prev_close - 1.0)
@@ -118,7 +119,7 @@ class State1D(State):
     State with shape suitable for 1D convolution
     """
     @property
-    def shape(self) -> tt.Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         if self.volumes:
             return 6, self.bars_count
         else:
@@ -126,8 +127,8 @@ class State1D(State):
 
     def encode(self) -> np.ndarray:
         res = np.zeros(shape=self.shape, dtype=np.float32)
-        start = self._offset-(self.bars_count-1)
-        stop = self._offset+1
+        start = self._offset - (self.bars_count - 1)
+        stop = self._offset + 1
         res[0] = self._prices.high[start:stop]
         res[1] = self._prices.low[start:stop]
         res[2] = self._prices.close[start:stop]
@@ -138,7 +139,7 @@ class State1D(State):
             dst = 3
         if self.have_position:
             res[dst] = 1.0
-            res[dst+1] = self._cur_close() / self.open_price - 1.0
+            res[dst + 1] = self._cur_close() / self.open_price - 1.0
         return res
 
 
@@ -146,7 +147,7 @@ class StocksEnv(gym.Env):
     spec = EnvSpec("StocksEnv-v0")
 
     def __init__(
-            self, prices: tt.Dict[str, data.Prices],
+            self, prices: dict[str, data.Prices],
             bars_count: int = DEFAULT_BARS_COUNT,
             commission: float = DEFAULT_COMMISSION_PERC,
             reset_on_close: bool = True, state_1d: bool = False,
@@ -172,13 +173,13 @@ class StocksEnv(gym.Env):
         prices = self._prices[self._instrument]
         bars = self._state.bars_count
         if self.random_ofs_on_reset:
-            offset = self.np_random.choice(prices.high.shape[0]-bars*10) + bars
+            offset = self.np_random.choice(prices.high.shape[0] - bars * 10) + bars
         else:
             offset = bars
         self._state.reset(prices, offset)
         return self._state.encode(), {}
 
-    def step(self, action_idx: int) -> tt.Tuple[np.ndarray, float, bool, bool, dict]:
+    def step(self, action_idx: int) -> tuple[np.ndarray, float, bool, bool, dict]:
         action = Actions(action_idx)
         reward, done = self._state.step(action)
         obs = self._state.encode()

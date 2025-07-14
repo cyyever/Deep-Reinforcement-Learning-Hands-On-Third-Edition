@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
-import os
 import argparse
+import os
+
 import gymnasium as gym
 import ptan
-from ptan.experience import VectorExperienceSourceFirstLast
-from ptan.common.utils import TBMeanTracker
-from torch.utils.tensorboard.writer import SummaryWriter
-
 import torch
-import torch.nn.utils as nn_utils
-import torch.nn.functional as F
-import torch.optim as optim
 import torch.multiprocessing as mp
-
+import torch.nn.functional as F
+import torch.nn.utils as nn_utils
+import torch.optim as optim
 from lib import common
+from ptan.common.utils import TBMeanTracker
+from ptan.experience import VectorExperienceSourceFirstLast
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 LEARNING_RATE = 0.001
@@ -144,11 +143,11 @@ if __name__ == "__main__":
             if grad_buffer is None:
                 grad_buffer = train_entry
             else:
-                for tgt_grad, grad in zip(grad_buffer, train_entry):
+                for tgt_grad, grad in zip(grad_buffer, train_entry, strict=False):
                     tgt_grad += grad
 
             if step_idx % TRAIN_BATCH == 0:
-                for param, grad in zip(net.parameters(), grad_buffer):
+                for param, grad in zip(net.parameters(), grad_buffer, strict=False):
                     param.grad = torch.FloatTensor(grad).to(device)
 
                 nn_utils.clip_grad_norm_(net.parameters(), CLIP_GRAD)

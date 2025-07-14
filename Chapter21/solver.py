@@ -2,22 +2,19 @@
 """
 Solver using MCTS and trained model
 """
-import time
 import argparse
-import random
-import logging
-import datetime
 import collections
 import csv
+import datetime
+import logging
+import random
+import time
 
-from tqdm import tqdm
-import seaborn as sns
 import matplotlib.pylab as plt
+import seaborn as sns
 import torch
-
-from libcube import cubes
-from libcube import model
-from libcube import mcts
+from libcube import cubes, mcts, model
+from tqdm import tqdm
 
 log = logging.getLogger("solver")
 
@@ -73,7 +70,7 @@ def gather_data(cube_env, net, max_seconds, max_steps, max_depth, samples_per_de
     """
     result = []
     try:
-        for depth in range(1, max_depth+1):
+        for depth in range(1, max_depth + 1):
             solved_count = 0
             for task_idx in tqdm(range(samples_per_depth)):
                 start_dt = datetime.datetime.utcnow()
@@ -85,7 +82,7 @@ def gather_data(cube_env, net, max_seconds, max_steps, max_depth, samples_per_de
                 if solution is not None:
                     solved_count += 1
             log.info("Depth %d processed, solved %d/%d (%.2f%%)", depth, solved_count, samples_per_depth,
-                     100.0*solved_count/samples_per_depth)
+                     100.0 * solved_count / samples_per_depth)
     except KeyboardInterrupt:
         log.info("Interrupt received, got %d data samples, use them", len(result))
     return result
@@ -123,14 +120,11 @@ def solve_task(env, task, net, cube_idx=None, max_seconds=DEFAULT_MAX_SECONDS, m
     ts = time.time()
 
     while True:
-        if batch_size > 1:
-            solution = tree.search_batch(batch_size)
-        else:
-            solution = tree.search()
+        solution = tree.search_batch(batch_size) if batch_size > 1 else tree.search()
         if solution:
             if not quiet:
                 log.info("On step %d we found goal state, unroll. Speed %.2f searches/s",
-                         step_no, (step_no*batch_size) / (time.time() - ts))
+                         step_no, (step_no * batch_size) / (time.time() - ts))
                 log.info("Tree depths: %s", tree.get_depth_stats())
                 bfs_solution = tree.find_solution()
                 log.info("Solutions: naive %d, bfs %d", len(solution), len(bfs_solution))
@@ -147,13 +141,13 @@ def solve_task(env, task, net, cube_idx=None, max_seconds=DEFAULT_MAX_SECONDS, m
                 if not quiet:
                     log.info("Maximum amount of steps has reached, cube wasn't solved. "
                              "Did %d searches, speed %.2f searches/s",
-                             step_no, (step_no*batch_size) / (time.time() - ts))
+                             step_no, (step_no * batch_size) / (time.time() - ts))
                     log.info("Tree depths: %s", tree.get_depth_stats())
                 return tree, None
         elif time.time() - ts > max_seconds:
             if not quiet:
                 log.info("Time is up, cube wasn't solved. Did %d searches, speed %.2f searches/s..",
-                         step_no, (step_no*batch_size) / (time.time() - ts))
+                         step_no, (step_no * batch_size) / (time.time() - ts))
                 log.info("Tree depths: %s", tree.get_depth_stats())
             return tree, None
 
@@ -168,31 +162,31 @@ def produce_plots(data, prefix, max_seconds, max_steps):
         suffix = "(time limit %d secs)" % max_seconds
 
     sns.set()
-    d, v = zip(*data_solved)
+    d, v = zip(*data_solved, strict=False)
     plot = sns.lineplot(d, v)
-    plot.set_title("Solve ratio per depth %s" % suffix)
+    plot.set_title(f"Solve ratio per depth {suffix}")
     plot.get_figure().savefig(prefix + "-solve_vs_depth.png")
 
     plt.clf()
-    d, v = zip(*data_steps)
+    d, v = zip(*data_steps, strict=False)
     plot = sns.lineplot(d, v)
-    plot.set_title("Steps to solve per depth %s" % suffix)
+    plot.set_title(f"Steps to solve per depth {suffix}")
     plot.get_figure().savefig(prefix + "-steps_vs_depth.png")
 
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
     parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--env", required=True, help="Type of env to train, supported types=%s" % cubes.names())
+    parser.add_argument("-e", "--env", required=True, help=f"Type of env to train, supported types={cubes.names()}")
     parser.add_argument("-m", "--model", required=True, help="Model file to load, has to match env type")
     parser.add_argument("--max-time", type=int, default=DEFAULT_MAX_SECONDS,
-                        help="Limit in seconds for each task, default=%s" % DEFAULT_MAX_SECONDS)
+                        help=f"Limit in seconds for each task, default={DEFAULT_MAX_SECONDS}")
     parser.add_argument("--max-steps", type=int, help="Limit amount of MCTS searches to be done. "
                                                       "If specified, superseeds --max-time")
     parser.add_argument("--max-depth", type=int, default=PLOT_MAX_DEPTHS,
-                        help="Maximum depth for plots and data, default=%s" % PLOT_MAX_DEPTHS)
+                        help=f"Maximum depth for plots and data, default={PLOT_MAX_DEPTHS}")
     parser.add_argument("--samples", type=int, default=PLOT_TASKS,
-                        help="Count of tests of each depth, default=%s" % PLOT_TASKS)
+                        help=f"Count of tests of each depth, default={PLOT_TASKS}")
     parser.add_argument("-b", "--batch", type=int, default=1, help="Batch size to use during the search, default=1")
     parser.add_argument("--cuda", default=False, action="store_true", help="Enable cuda")
     parser.add_argument("--seed", type=int, default=42, help="Seed to use, if zero, no seed used. default=42")
@@ -235,14 +229,14 @@ if __name__ == "__main__":
             for idx, l in enumerate(fd):
                 task = list(map(int, l.strip().split(',')))
                 start_dt = datetime.datetime.utcnow()
-                tree, solution  = solve_task(cube_env, task, net, cube_idx=idx, max_seconds=args.max_time,
+                tree, solution = solve_task(cube_env, task, net, cube_idx=idx, max_seconds=args.max_time,
                                           max_steps=args.max_steps, device=device, batch_size=args.batch)
                 data_point = get_datapoint(tree, solution, start_dt, len(task))
                 data.append(data_point)
                 if solution is not None:
                     solved += 1
                 count += 1
-        log.info("Solved %d out of %d cubes, which is %.2f%% success ratio", solved, count, 100*solved / count)
+        log.info("Solved %d out of %d cubes, which is %.2f%% success ratio", solved, count, 100 * solved / count)
     else:
         data = gather_data(cube_env, net, args.max_time, args.max_steps, args.max_depth, args.samples,
                            args.batch, device)

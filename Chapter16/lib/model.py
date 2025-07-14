@@ -1,9 +1,10 @@
-import ptan
-import numpy as np
-import torch
 import math
-import torch.nn as nn
+
 import gymnasium as gym
+import numpy as np
+import ptan
+import torch
+import torch.nn as nn
 
 HID_SIZE = 64
 
@@ -111,7 +112,7 @@ class AgentDDPG(ptan.agent.BaseAgent):
 
         if self.ou_enabled and self.ou_epsilon > 0:
             new_a_states = []
-            for a_state, action in zip(agent_states, actions):
+            for a_state, action in zip(agent_states, actions, strict=False):
                 if a_state is None:
                     a_state = np.zeros(
                         shape=action.shape, dtype=np.float32)
@@ -126,7 +127,6 @@ class AgentDDPG(ptan.agent.BaseAgent):
 
         actions = np.clip(actions, -1, 1)
         return actions, new_a_states
-
 
 
 def test_net(
@@ -152,6 +152,6 @@ def test_net(
 
 
 def calc_logprob(mu_v: torch.Tensor, logstd_v: torch.Tensor, actions_v: torch.Tensor):
-    p1 = - ((mu_v - actions_v) ** 2) / (2*torch.exp(logstd_v).clamp(min=1e-3))
+    p1 = - ((mu_v - actions_v) ** 2) / (2 * torch.exp(logstd_v).clamp(min=1e-3))
     p2 = - torch.log(torch.sqrt(2 * math.pi * torch.exp(logstd_v)))
     return p1 + p2

@@ -1,19 +1,20 @@
-import logging
-import random
-import pickle
-import json
-import numpy as np
 import collections
-from dataclasses import dataclass
-import typing as tt
-import gymnasium as gym
-import torch
-import queue
-from torch import nn
-from gymnasium.core import WrapperObsType, WrapperActType, SupportsFloat
+import json
+import logging
 import pathlib
+import pickle
+import queue
+import random
+import typing as tt
 from copy import deepcopy
+from dataclasses import dataclass
+
+import gymnasium as gym
+import numpy as np
+import torch
+from gymnasium.core import SupportsFloat, WrapperActType, WrapperObsType
 from PIL import Image
+from torch import nn
 
 log = logging.getLogger("rlhf")
 
@@ -38,9 +39,9 @@ class HumanLabel:
     # 1 if sample 1 is better than 2
     # 2 if sample 2 is better than 1
     # 0 if they are equal
-    label: tt.Optional[int]
+    label: int | None
 
-    def to_json(self, extra_id: tt.Optional[int] = None) -> dict:
+    def to_json(self, extra_id: int | None = None) -> dict:
         res = {
             "sample1": str(self.sample1),
             "sample2": str(self.sample2),
@@ -65,7 +66,7 @@ class Database:
     paths: list[pathlib.Path]
     labels: list[HumanLabel]
 
-    def shuffle_labels(self, seed: tt.Optional[int] = None):
+    def shuffle_labels(self, seed: int | None = None):
         random.seed(seed)
         random.shuffle(self.labels)
 
@@ -204,7 +205,7 @@ def store_label(db: Database, label: HumanLabel):
 
 
 def steps_to_tensors(path: pathlib.Path, total_actions: int) -> \
-    tt.Tuple[torch.Tensor, torch.Tensor]:
+    tuple[torch.Tensor, torch.Tensor]:
     dat = path.read_bytes()
     steps = pickle.loads(dat)
     obs = np.stack([s.obs for s in steps])
@@ -217,7 +218,7 @@ def steps_to_tensors(path: pathlib.Path, total_actions: int) -> \
 
 
 class RewardModel(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
+    def __init__(self, input_shape: tuple[int, ...], n_actions: int):
         super().__init__()
 
         self.conv = nn.Sequential(
@@ -259,7 +260,7 @@ class RewardModelWrapper(gym.Wrapper):
     KEY_REWARD_STD = "reward_std"
 
     def __init__(self, env: gym.Env, model_path: pathlib.Path, dev: torch.device,
-                 reward_window: int = 100, metrics_queue: tt.Optional[queue.Queue] = None):
+                 reward_window: int = 100, metrics_queue: queue.Queue | None = None):
         """
         Constructs reward model wrapper. Use given model
         to get the reward for the observations. This reward is

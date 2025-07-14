@@ -1,6 +1,7 @@
+import typing as tt
+
 import gymnasium as gym
 import ptan
-import typing as tt
 import torch.nn as nn
 
 
@@ -37,8 +38,8 @@ class DullAgent(ptan.agent.BaseAgent):
     def __init__(self, action: int):
         self.action = action
 
-    def __call__(self, observations: list[int], state: tt.Optional[list] = None) -> \
-            tt.Tuple[list[int], tt.Optional[list]]:
+    def __call__(self, observations: list[int], state: list | None = None) -> \
+            tuple[list[int], list | None]:
         return [self.action for _ in observations], state
 
 

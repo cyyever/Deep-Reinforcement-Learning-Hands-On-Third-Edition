@@ -1,26 +1,25 @@
 #!/usr/bin/env python3
+import argparse
 import os
+from types import SimpleNamespace
 
 import ptan
-import torch
-import argparse
 import ptan.ignite as ptan_ignite
-
-from torch import optim
-from types import SimpleNamespace
-from lib import data, model, common
+import torch
 from ignite.engine import Engine
+from lib import common, data, model
+from torch import optim
 
 # As both deer and tigers are in the same replay buffer, need to increase the sampled batch
 TRAIN_BATCH_SIZE = 32
 
 PARAMS = SimpleNamespace(**{
     'run_name':         'tigers-deers',
-    'stop_reward':      None,
+    'stop_reward': None,
     'replay_size':      3000000,
     'replay_initial':   300,
     'target_net_sync':  1000,
-    'epsilon_frames':   5*10**5,
+    'epsilon_frames':   5 * 10**5,
     'epsilon_start':    1.0,
     'epsilon_final':    0.02,
     'learning_rate':    1e-4,
@@ -212,28 +211,22 @@ if __name__ == "__main__":
         engine.state.metrics['test_tiger_reward'] = tiger_reward
         engine.state.metrics['test_deer_reward'] = deer_reward
         engine.state.metrics['test_steps'] = steps
-        print("Test done: got {:.3f} tiger and {:.3f} deer reward after {:.2f} steps".format(
-            tiger_reward, deer_reward, steps
-        ))
+        print(f"Test done: got {tiger_reward:.3f} tiger and {deer_reward:.3f} deer reward after {steps:.2f} steps")
 
         global best_test_tiger_reward, best_test_deer_reward
         if best_test_tiger_reward is None:
             best_test_tiger_reward = tiger_reward
         elif best_test_tiger_reward < tiger_reward:
-            print("Best test tiger reward updated {:.3f} -> {:.3f}, save model".format(
-                best_test_tiger_reward, tiger_reward
-            ))
+            print(f"Best test tiger reward updated {best_test_tiger_reward:.3f} -> {tiger_reward:.3f}, save model")
             best_test_tiger_reward = tiger_reward
-            torch.save(tiger_net.state_dict(), os.path.join(saves_path, "best_tiger_%.3f.dat" % tiger_reward))
+            torch.save(tiger_net.state_dict(), os.path.join(saves_path, f"best_tiger_{tiger_reward:.3f}.dat"))
 
         if best_test_deer_reward is None:
             best_test_deer_reward = deer_reward
         elif best_test_deer_reward < deer_reward:
-            print("Best test deer reward updated {:.3f} -> {:.3f}, save model".format(
-                best_test_deer_reward, deer_reward
-            ))
+            print(f"Best test deer reward updated {best_test_deer_reward:.3f} -> {deer_reward:.3f}, save model")
             best_test_deer_reward = deer_reward
-            torch.save(deer_net.state_dict(), os.path.join(saves_path, "best_deer_%.3f.dat" % deer_reward))
+            torch.save(deer_net.state_dict(), os.path.join(saves_path, f"best_deer_{deer_reward:.3f}.dat"))
 
     engine.run(common.batch_generator(buffer, PARAMS.replay_initial,
                                       PARAMS.batch_size))

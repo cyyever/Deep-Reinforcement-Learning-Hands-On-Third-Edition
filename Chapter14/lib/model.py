@@ -1,14 +1,14 @@
-import ptan
 import logging
 import pickle
-import numpy as np
 import typing as tt
-from nltk.tokenize import TweetTokenizer
 
+import numpy as np
+import ptan
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.nn.utils.rnn as rnn_utils
+from nltk.tokenize import TweetTokenizer
 
 MM_EMBEDDINGS_DIM = 50
 MM_HIDDEN_SIZE = 128
@@ -18,7 +18,7 @@ TOKEN_UNK = "#unk"
 
 
 class Model(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
+    def __init__(self, input_shape: tuple[int, ...], n_actions: int):
         super().__init__()
 
         self.conv = nn.Sequential(
@@ -32,14 +32,14 @@ class Model(nn.Module):
         self.policy = nn.Linear(size, n_actions)
         self.value = nn.Linear(size, 1)
 
-    def forward(self, x: torch.ByteTensor) -> tt.Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.ByteTensor) -> tuple[torch.Tensor, torch.Tensor]:
         xx = x / 255.0
         conv_out = self.conv(xx)
         return self.policy(conv_out), self.value(conv_out)
 
 
 class ModelMultimodal(nn.Module):
-    def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int,
+    def __init__(self, input_shape: tuple[int, ...], n_actions: int,
                  max_dict_size: int = MM_MAX_DICT_SIZE):
         super().__init__()
 
@@ -54,11 +54,11 @@ class ModelMultimodal(nn.Module):
 
         self.emb = nn.Embedding(max_dict_size, MM_EMBEDDINGS_DIM)
         self.rnn = nn.LSTM(MM_EMBEDDINGS_DIM, MM_HIDDEN_SIZE, batch_first=True)
-        self.policy = nn.Linear(size + MM_HIDDEN_SIZE*2, n_actions)
-        self.value = nn.Linear(size + MM_HIDDEN_SIZE*2, 1)
+        self.policy = nn.Linear(size + MM_HIDDEN_SIZE * 2, n_actions)
+        self.value = nn.Linear(size + MM_HIDDEN_SIZE * 2, 1)
 
     def _concat_features(self, img_out: torch.Tensor,
-                         rnn_hidden: torch.Tensor | tt.Tuple[torch.Tensor, ...]):
+                         rnn_hidden: torch.Tensor | tuple[torch.Tensor, ...]):
         batch_size = img_out.size()[0]
         if isinstance(rnn_hidden, tuple):
             flat_h = list(map(lambda t: t.view(batch_size, -1), rnn_hidden))
@@ -67,7 +67,7 @@ class ModelMultimodal(nn.Module):
             rnn_h = rnn_hidden.view(batch_size, -1)
         return torch.cat((img_out, rnn_h), dim=1)
 
-    def forward(self, x: tt.Tuple[torch.Tensor, rnn_utils.PackedSequence]):
+    def forward(self, x: tuple[torch.Tensor, rnn_utils.PackedSequence]):
         x_img, x_text = x
 
         # deal with text data
@@ -96,7 +96,7 @@ class MultimodalPreprocessor:
     def __len__(self):
         return len(self.token_to_id)
 
-    def __call__(self, batch: tt.Tuple[tt.Any, ...] | list[tt.Tuple[tt.Any, ...]]):
+    def __call__(self, batch: tuple[tt.Any, ...] | list[tuple[tt.Any, ...]]):
         """
         Convert list of multimodel observations (tuples with image and text string) into the form suitable
         for ModelMultimodal to disgest
@@ -104,17 +104,14 @@ class MultimodalPreprocessor:
         """
         tokens_batch = []
 
-        if isinstance(batch, tuple):
-            batch_iter = zip(*batch)
-        else:
-            batch_iter = batch
+        batch_iter = zip(*batch, strict=False) if isinstance(batch, tuple) else batch
         for img_obs, txt_obs in batch_iter:
             tokens = self.tokenizer.tokenize(txt_obs)
             idx_obs = self.tokens_to_idx(tokens)
             tokens_batch.append((img_obs, idx_obs))
         # sort batch decreasing to seq len
         tokens_batch.sort(key=lambda p: len(p[1]), reverse=True)
-        img_batch, seq_batch = zip(*tokens_batch)
+        img_batch, seq_batch = zip(*tokens_batch, strict=False)
         lens = list(map(len, seq_batch))
 
         # convert data into the target form

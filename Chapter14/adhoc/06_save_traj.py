@@ -3,14 +3,15 @@
 Tool saves trajectories from several games using the given model
 """
 import sys
+
 sys.path.append(".")
-import pathlib
 import argparse
+import pathlib
+
+import numpy as np
 import torch
 import torch.nn.functional as F
-import numpy as np
-
-from lib import model, wob, demos
+from lib import demos, model, wob
 
 ENV_NAME = 'miniwob/count-sides-v1'
 

@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
+import argparse
+import collections
+import itertools
 import os
 import typing as tt
 from time import time
-import argparse
+
 import torch
-import torch.optim as optim
 import torch.nn.functional as F
-import itertools
-import collections
-from torch.utils.tensorboard.writer import SummaryWriter
-
-from lib import muzero as mu
+import torch.optim as optim
 from lib import game
-
+from lib import muzero as mu
+from torch.utils.tensorboard.writer import SummaryWriter
 
 # count of recent episodes in the replay buffer
 REPLAY_BUFFER = 128
@@ -30,12 +29,12 @@ EVALUATION_ROUNDS = 20
 
 
 def evaluate(net1: mu.MuZeroModels, net2: mu.MuZeroModels,
-             params: mu.MuZeroParams) -> tt.Tuple[float, float]:
+             params: mu.MuZeroParams) -> tuple[float, float]:
     n1_win, n2_win = 0, 0
     rewards = []
     sum_steps = 0
 
-    for r_idx in range(EVALUATION_ROUNDS):
+    for _r_idx in range(EVALUATION_ROUNDS):
         r, e = mu.play_game(net1, net2, params, temperature=0)
         sum_steps += len(e)
         if r < -0.5:
@@ -119,7 +118,6 @@ if __name__ == "__main__":
             writer.add_scalar("loss_v", loss_v_full_t.item(), step_idx)
             writer.add_scalar("loss_r", loss_r_full_t.item(), step_idx)
 
-
         writer.add_scalar("time_train", time() - ts, step_idx)
         writer.add_scalar("temp", temperature, step_idx)
         temperature = max(0.0, temperature - TEMP_STEP)
@@ -128,7 +126,7 @@ if __name__ == "__main__":
         if step_idx % EVALUATE_EVERY_STEP == 0:
             ts = time()
             win_ratio, avg_steps = evaluate(net, best_net, params)
-            print("Net evaluated, win ratio = %.2f" % win_ratio)
+            print(f"Net evaluated, win ratio = {win_ratio:.2f}")
             writer.add_scalar("eval_win_ratio", win_ratio, step_idx)
             writer.add_scalar("eval_steps", avg_steps, step_idx)
             if win_ratio > BEST_NET_WIN_RATIO:

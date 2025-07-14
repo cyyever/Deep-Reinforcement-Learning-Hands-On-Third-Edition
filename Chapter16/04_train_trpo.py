@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-import os
-import ptan
-import time
-import gymnasium as gym
 import argparse
-from torch.utils.tensorboard.writer import SummaryWriter
+import os
+import time
 
-from lib import model, trpo, common
-
+import gymnasium as gym
 import numpy as np
+import ptan
 import torch
-import torch.optim as optim
 import torch.nn.functional as F
-
+import torch.optim as optim
+from lib import common, model, trpo
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 GAE_LAMBDA = 0.95
@@ -69,7 +67,7 @@ if __name__ == "__main__":
         for step_idx, exp in enumerate(exp_source):
             rewards_steps = exp_source.pop_rewards_steps()
             if rewards_steps:
-                rewards, steps = zip(*rewards_steps)
+                rewards, steps = zip(*rewards_steps, strict=False)
                 writer.add_scalar("episode_steps", np.mean(steps), step_idx)
                 tracker.reward(np.mean(rewards), step_idx)
 
@@ -82,7 +80,7 @@ if __name__ == "__main__":
                 writer.add_scalar("test_steps", steps, step_idx)
                 if best_reward is None or best_reward < rewards:
                     if best_reward is not None:
-                        print("Best reward updated: {:.3f} -> {:.3f}".format(best_reward, rewards))
+                        print(f"Best reward updated: {best_reward:.3f} -> {rewards:.3f}")
                         name = "best_%+.3f_%d.dat" % (rewards, step_idx)
                         fname = os.path.join(save_path, name)
                         torch.save(net_act.state_dict(), fname)
@@ -126,7 +124,7 @@ if __name__ == "__main__":
                 mu_v = net_act(traj_states_v)
                 logprob_v = model.calc_logprob(mu_v, net_act.logstd, traj_actions_v)
                 dp_v = torch.exp(logprob_v - old_logprob_v)
-                action_loss_v = -traj_adv_v.unsqueeze(dim=-1)*dp_v
+                action_loss_v = -traj_adv_v.unsqueeze(dim=-1) * dp_v
                 return action_loss_v.mean()
 
             def get_kl():

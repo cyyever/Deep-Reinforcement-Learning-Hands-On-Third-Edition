@@ -1,7 +1,7 @@
 import enum
 import random
-import numpy as np
 
+import numpy as np
 import torch
 import torch.nn as nn
 
@@ -100,13 +100,13 @@ def sample_batch(scramble_buffer, net, device, batch_size, value_targets):
     :return: tensors
     """
     data = random.sample(scramble_buffer, batch_size)
-    states, depths, is_goals, explored_states, explored_goals = zip(*data)
+    states, depths, is_goals, explored_states, explored_goals = zip(*data, strict=False)
 
     # handle explored states
     explored_states = np.stack(explored_states)
     shape = explored_states.shape
     explored_states_t = torch.tensor(explored_states).to(device)
-    explored_states_t = explored_states_t.view(shape[0]*shape[1], *shape[2:])     # shape: (states*actions, encoded_shape)
+    explored_states_t = explored_states_t.view(shape[0] * shape[1], *shape[2:])     # shape: (states*actions, encoded_shape)
     value_t = net(explored_states_t, value_only=True)
     value_t = value_t.squeeze(-1).view(shape[0], shape[1])                  # shape: (states, actions)
     if value_targets == ValueTargetsMethod.Paper:
@@ -123,13 +123,13 @@ def sample_batch(scramble_buffer, net, device, batch_size, value_targets):
         max_val_t[goal_indices] = 0.0
         max_act_t[goal_indices] = 0
     else:
-        assert False, "Unsupported method of value targets"
+        raise AssertionError("Unsupported method of value targets")
 
     # train input
     enc_input = np.stack(states)
     enc_input_t = torch.tensor(enc_input).to(device)
     depths_t = torch.tensor(depths, dtype=torch.float32).to(device)
-    weights_t = 1/depths_t
+    weights_t = 1 / depths_t
     return enc_input_t.detach(), weights_t.detach(), max_act_t.detach(), max_val_t.detach()
 
 
@@ -145,7 +145,7 @@ def make_train_data(cube_env, net, device, batch_size, scramble_depth, shuffle=F
         data.extend(cube_env.scramble_cube(scramble_depth, include_initial=True))
     if shuffle:
         random.shuffle(data)
-    cube_depths, cube_states = zip(*data)
+    cube_depths, cube_states = zip(*data, strict=False)
 
     # explore each state by doing 1-step BFS search and keep a mask of goal states (for reward calculation)
     explored_states, explored_goals = [], []
@@ -162,7 +162,7 @@ def make_train_data(cube_env, net, device, batch_size, scramble_depth, shuffle=F
 
     shape = enc_explored.shape
     enc_explored_t = torch.tensor(enc_explored).to(device)
-    enc_explored_t = enc_explored_t.view(shape[0]*shape[1], *shape[2:])     # shape: (states*actions, encoded_shape)
+    enc_explored_t = enc_explored_t.view(shape[0] * shape[1], *shape[2:])     # shape: (states*actions, encoded_shape)
     value_t = net(enc_explored_t, value_only=True)
     value_t = value_t.squeeze(-1).view(shape[0], shape[1])                  # shape: (states, actions)
     if value_targets == ValueTargetsMethod.Paper:
@@ -178,11 +178,11 @@ def make_train_data(cube_env, net, device, batch_size, scramble_depth, shuffle=F
         max_val_t[goal_indices] = 0.0
         max_act_t[goal_indices] = 0
     else:
-        assert False, "Unsupported method of value targets"
+        raise AssertionError("Unsupported method of value targets")
 
     # create train input
     enc_input = encode_states(cube_env, cube_states)
     enc_input_t = torch.tensor(enc_input).to(device)
     cube_depths_t = torch.tensor(cube_depths, dtype=torch.float32).to(device)
-    weights_t = 1/cube_depths_t
+    weights_t = 1 / cube_depths_t
     return enc_input_t.detach(), weights_t.detach(), max_act_t.detach(), max_val_t.detach()

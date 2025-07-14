@@ -1,18 +1,16 @@
-import io
-import copy
-import json
-import pathlib
-
-import math
-import numpy as np
-import bisect
 import base64
+import bisect
+import copy
+import io
+import json
+import math
+import pathlib
 import typing as tt
-from PIL import Image, ImageDraw
 
-from ptan.experience import ExperienceFirstLast
-
+import numpy as np
 from lib import wob
+from PIL import Image, ImageDraw
+from ptan.experience import ExperienceFirstLast
 
 
 def encode_screenshot(data: np.ndarray) -> str:
@@ -27,7 +25,7 @@ def decode_screenshot(s_data: str) -> np.ndarray:
     return np.load(fd)['arr_0']
 
 
-def join_obs(data: dict, delta_obs: tt.Dict[int, dict], ofs_ms: int = 100) -> dict:
+def join_obs(data: dict, delta_obs: dict[int, dict], ofs_ms: int = 100) -> dict:
     """
     Join events data and recorded observations (with screenshots)
     :param data: events obtained from the website
@@ -37,7 +35,7 @@ def join_obs(data: dict, delta_obs: tt.Dict[int, dict], ofs_ms: int = 100) -> di
     """
     keys = list(sorted(delta_obs.keys()))
     new_data = copy.deepcopy(data)
-    last_time: tt.Dict[tt.Tuple[str, int], int] = dict()
+    last_time: dict[tuple[str, int], int] = dict()
     for idx, state in enumerate(new_data['states']):
         if idx == 0:
             # initial state always copied from the first entry
@@ -58,7 +56,7 @@ def join_obs(data: dict, delta_obs: tt.Dict[int, dict], ofs_ms: int = 100) -> di
             else:
                 src_idx = bisect.bisect_left(keys, cur_time + ofs_ms)
         if src_idx >= len(keys):
-            src_idx = len(keys)-1
+            src_idx = len(keys) - 1
         src_key = keys[src_idx]
         scr_np = delta_obs[src_key]['screenshot']
         scr = encode_screenshot(scr_np)
@@ -66,7 +64,7 @@ def join_obs(data: dict, delta_obs: tt.Dict[int, dict], ofs_ms: int = 100) -> di
     return new_data
 
 
-def observations_to_delta(observations: list[tt.Tuple[dict, int]]) -> tt.Dict[int, dict]:
+def observations_to_delta(observations: list[tuple[dict, int]]) -> dict[int, dict]:
     """
     Convert pairs of observations with nanoseconds into relative miliseconds dict
     :param observations: list of tuples (observation, nanosecond timestamp)
@@ -149,7 +147,7 @@ def load_demo_dir(
     return res
 
 
-def save_obs_image(data: np.ndarray, action: tt.Optional[int], file_name: str, transpose: bool = True):
+def save_obs_image(data: np.ndarray, action: int | None, file_name: str, transpose: bool = True):
     if transpose:
         data = np.transpose(data, (1, 2, 0))
     img = Image.fromarray(data)

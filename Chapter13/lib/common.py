@@ -1,18 +1,16 @@
 import re
-from textworld import text_utils
-import gymnasium as gym
-
-import warnings
 import typing as tt
+import warnings
+from datetime import datetime, timedelta
 from types import SimpleNamespace
-from datetime import timedelta, datetime
 
+import gymnasium as gym
 import ptan
 import ptan.ignite as ptan_ignite
+from ignite.contrib.handlers import tensorboard_logger as tb_logger
 from ignite.engine import Engine
 from ignite.metrics import RunningAverage
-from ignite.contrib.handlers import tensorboard_logger as tb_logger
-
+from textworld import text_utils
 
 PARAMS = {
     'small': SimpleNamespace(**{
@@ -95,8 +93,8 @@ def setup_ignite(engine: Engine, exp_source, run_name: str,
     tb.attach(engine, log_handler=handler, event_name=event)
 
 
-def get_games_spaces(game_files: list[str]) -> tt.Tuple[
-    tt.Dict[int, str],
+def get_games_spaces(game_files: list[str]) -> tuple[
+    dict[int, str],
     gym.Space,
     gym.Space,
 ]:
@@ -116,7 +114,7 @@ def get_games_spaces(game_files: list[str]) -> tt.Tuple[
     return vocab_dict, action_space, observation_space
 
 
-def build_rev_vocab(vocab: tt.Dict[int, str]) -> tt.Dict[str, int]:
+def build_rev_vocab(vocab: dict[int, str]) -> dict[str, int]:
     """
     Build reverse vocabulary
     :param vocab: forward vocab (int -> word)
@@ -127,7 +125,7 @@ def build_rev_vocab(vocab: tt.Dict[int, str]) -> tt.Dict[str, int]:
     return res
 
 
-def tokenize(text: str, rev_vocab: tt.Dict[str, int]) -> list[int]:
+def tokenize(text: str, rev_vocab: dict[str, int]) -> list[int]:
     """
     Very simple tokeniser into fixed word set
     :param text: text to tokenize

@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-from ptan.experience import ExperienceFirstLast
-
 import typing as tt
-from ray import tune
 
-import torch
-from torch import nn
-from torch import optim
+import gymnasium as gym
 import numpy as np
-
+import ptan
+import torch
 from ignite.engine import Engine
-
-from lib import dqn_model, common, dqn_extra
+from lib import common, dqn_extra, dqn_model
+from ptan.experience import ExperienceFirstLast
+from ray import tune
+from torch import nn, optim
 
 NAME = "05_prio_replay"
 PRIO_REPLAY_ALPHA = 0.6
@@ -36,7 +32,7 @@ BEST_PONG = common.Hyperparams(
 
 def calc_loss(batch: list[ExperienceFirstLast], batch_weights: np.ndarray,
               net: nn.Module, tgt_net: nn.Module, gamma: float,
-              device: torch.device) -> tt.Tuple[torch.Tensor, np.ndarray]:
+              device: torch.device) -> tuple[torch.Tensor, np.ndarray]:
     states, actions, rewards, dones, next_states = common.unpack_batch(batch)
 
     states_v = torch.as_tensor(states).to(device)
@@ -59,7 +55,7 @@ def calc_loss(batch: list[ExperienceFirstLast], batch_weights: np.ndarray,
 
 
 def train(params: common.Hyperparams,
-          device: torch.device, extra: dict) -> tt.Optional[int]:
+          device: torch.device, extra: dict) -> int | None:
     alpha = extra["alpha"]
     env = gym.make(params.env_name)
     env = ptan.common.wrappers.wrap_dqn(env)

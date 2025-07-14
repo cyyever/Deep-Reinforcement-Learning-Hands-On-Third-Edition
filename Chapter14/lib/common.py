@@ -3,10 +3,10 @@ import time
 import typing as tt
 
 import numpy as np
+import ptan
 import torch
 from torch.utils.tensorboard.writer import SummaryWriter
 
-import ptan
 
 class RewardTracker:
     def __init__(self, writer: SummaryWriter):
@@ -22,7 +22,7 @@ class RewardTracker:
         self.writer.close()
 
     def reward(self, reward: float, frame: int,
-               epsilon: tt.Optional[float] = None):
+               epsilon: float | None = None):
         self.total_rewards.append(reward)
         speed = (frame - self.ts_frame) / (time.time() - self.ts)
         self.ts_frame = frame

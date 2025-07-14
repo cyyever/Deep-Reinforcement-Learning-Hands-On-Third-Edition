@@ -1,21 +1,18 @@
 #!/usr/bin/env python
-import cv2
-import time
-import random
 import argparse
+import random
+import time
 import typing as tt
 
+import cv2
+import gymnasium as gym
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.tensorboard.writer import SummaryWriter
-
 import torchvision.utils as vutils
-
-import gymnasium as gym
 from gymnasium import spaces
-
-import numpy as np
+from torch.utils.tensorboard.writer import SummaryWriter
 
 log = gym.logger
 log.set_level(gym.logger.INFO)
@@ -65,9 +62,9 @@ class Discriminator(nn.Module):
             nn.Conv2d(in_channels=input_shape[0], out_channels=DISCR_FILTERS,
                       kernel_size=4, stride=2, padding=1),
             nn.ReLU(),
-            nn.Conv2d(in_channels=DISCR_FILTERS, out_channels=DISCR_FILTERS*2,
+            nn.Conv2d(in_channels=DISCR_FILTERS, out_channels=DISCR_FILTERS * 2,
                       kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(DISCR_FILTERS*2),
+            nn.BatchNorm2d(DISCR_FILTERS * 2),
             nn.ReLU(),
             nn.Conv2d(in_channels=DISCR_FILTERS * 2, out_channels=DISCR_FILTERS * 4,
                       kernel_size=4, stride=2, padding=1),
@@ -118,7 +115,7 @@ class Generator(nn.Module):
 
 
 def iterate_batches(envs: list[gym.Env],
-                    batch_size: int = BATCH_SIZE) -> tt.Generator[torch.Tensor, None, None]:
+                    batch_size: int = BATCH_SIZE) -> tt.Generator[torch.Tensor]:
     batch = [e.reset()[0] for e in envs]
     env_gen = iter(lambda: random.choice(envs), None)
 

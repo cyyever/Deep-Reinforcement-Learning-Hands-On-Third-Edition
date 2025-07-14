@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-import numpy as np
-from torch.utils.tensorboard.writer import SummaryWriter
 import typing as tt
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 LEARNING_RATE = 0.001
@@ -32,10 +32,10 @@ class PGN(nn.Module):
         return self.net(x)
 
 
-def smooth(old: tt.Optional[float], val: float, alpha: float = 0.95) -> float:
+def smooth(old: float | None, val: float, alpha: float = 0.95) -> float:
     if old is None:
         return val
-    return old * alpha + (1-alpha)*val
+    return old * alpha + (1 - alpha) * val
 
 
 if __name__ == "__main__":

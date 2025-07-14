@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-import gymnasium as gym
 import copy
-import numpy as np
 
+import gymnasium as gym
+import numpy as np
 import torch
 import torch.nn as nn
-
-from torch.utils.tensorboard.writer import SummaryWriter
 from lib import common
-
+from torch.utils.tensorboard.writer import SummaryWriter
 
 NOISE_STD = 0.01
 POPULATION_SIZE = 50
@@ -70,7 +68,7 @@ if __name__ == "__main__":
         # generate next population
         prev_population = population
         population = [population[0]]
-        for _ in range(POPULATION_SIZE-1):
+        for _ in range(POPULATION_SIZE - 1):
             parent_idx = np.random.randint(0, PARENTS_COUNT)
             parent = prev_population[parent_idx][0]
             net = mutate_parent(parent)

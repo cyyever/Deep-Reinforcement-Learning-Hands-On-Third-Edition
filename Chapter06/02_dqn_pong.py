@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-from lib import dqn_model
-from lib import wrappers
-
-from dataclasses import dataclass
 import argparse
-import time
-import numpy as np
 import collections
+import time
 import typing as tt
+from dataclasses import dataclass
 
+import gymnasium as gym
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
+from lib import dqn_model, wrappers
 from torch.utils.tensorboard.writer import SummaryWriter
-
 
 DEFAULT_ENV_NAME = "PongNoFrameskip-v4"
 MEAN_REWARD_BOUND = 19
@@ -33,13 +29,14 @@ EPSILON_FINAL = 0.01
 
 State = np.ndarray
 Action = int
-BatchTensors = tt.Tuple[
+BatchTensors = tuple[
     torch.ByteTensor,           # current state
     torch.LongTensor,           # actions
     torch.Tensor,               # rewards
     torch.BoolTensor,           # done || trunc
     torch.ByteTensor            # next state
 ]
+
 
 @dataclass
 class Experience:
@@ -69,7 +66,7 @@ class Agent:
     def __init__(self, env: gym.Env, exp_buffer: ExperienceBuffer):
         self.env = env
         self.exp_buffer = exp_buffer
-        self.state: tt.Optional[np.ndarray] = None
+        self.state: np.ndarray | None = None
         self._reset()
 
     def _reset(self):
@@ -78,7 +75,7 @@ class Agent:
 
     @torch.no_grad()
     def play_step(self, net: dqn_model.DQN, device: torch.device,
-                  epsilon: float = 0.0) -> tt.Optional[float]:
+                  epsilon: float = 0.0) -> float | None:
         done_reward = None
 
         if np.random.random() < epsilon:
@@ -120,7 +117,7 @@ def batch_to_tensors(batch: list[Experience], device: torch.device) -> BatchTens
     dones_t = torch.BoolTensor(dones)
     new_states_t = torch.as_tensor(np.asarray(new_state))
     return states_t.to(device), actions_t.to(device), rewards_t.to(device), \
-           dones_t.to(device),  new_states_t.to(device)
+           dones_t.to(device), new_states_t.to(device)
 
 
 def calc_loss(batch: list[Experience], net: dqn_model.DQN, tgt_net: dqn_model.DQN,
@@ -182,7 +179,7 @@ if __name__ == "__main__":
             writer.add_scalar("reward_100", m_reward, frame_idx)
             writer.add_scalar("reward", reward, frame_idx)
             if best_m_reward is None or best_m_reward < m_reward:
-                torch.save(net.state_dict(), args.env + "-best_%.0f.dat" % m_reward)
+                torch.save(net.state_dict(), args.env + f"-best_{m_reward:.0f}.dat")
                 if best_m_reward is not None:
                     print(f"Best reward updated {best_m_reward:.3f} -> {m_reward:.3f}")
                 best_m_reward = m_reward

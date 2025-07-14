@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 import argparse
+
 import gymnasium as gym
-
-from lib import model, common
-
 import numpy as np
 import torch
-
+from lib import common, model
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

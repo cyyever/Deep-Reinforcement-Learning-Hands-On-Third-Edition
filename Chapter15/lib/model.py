@@ -1,6 +1,5 @@
-import ptan
 import numpy as np
-
+import ptan
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -140,7 +139,7 @@ class AgentDDPG(ptan.agent.BaseAgent):
 
         if self.ou_enabled and self.ou_epsilon > 0:
             new_a_states = []
-            for a_state, action in zip(agent_states, actions):
+            for a_state, action in zip(agent_states, actions, strict=False):
                 if a_state is None:
                     a_state = np.zeros(shape=action.shape, dtype=np.float32)
                 a_state += self.ou_teta * (self.ou_mu - a_state)

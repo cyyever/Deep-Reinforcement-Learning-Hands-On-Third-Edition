@@ -1,12 +1,11 @@
-import numpy as np
-import torch
-import torch.nn as nn
 import dataclasses
 import typing as tt
 
+import numpy as np
+import torch
+import torch.nn as nn
 from ptan.actions import EpsilonGreedyActionSelector
-from ptan.experience import ExperienceFirstLast, \
-    ExperienceReplayBuffer
+from ptan.experience import ExperienceFirstLast, ExperienceReplayBuffer
 
 SEED = 123
 
@@ -42,7 +41,7 @@ GAME_PARAMS = {
 
 
 def unpack_batch(batch: list[ExperienceFirstLast]):
-    states, actions, rewards, dones, last_states = [],[],[],[],[]
+    states, actions, rewards, dones, last_states = [], [], [], [], []
     for exp in batch:
         states.append(exp.state)
         actions.append(exp.action)
@@ -99,7 +98,7 @@ class EpsilonTracker:
 
 def batch_generator(buffer: ExperienceReplayBuffer,
                     initial: int, batch_size: int) -> \
-        tt.Generator[list[ExperienceFirstLast], None, None]:
+        tt.Generator[list[ExperienceFirstLast]]:
     buffer.populate(initial)
     while True:
         buffer.populate(1)

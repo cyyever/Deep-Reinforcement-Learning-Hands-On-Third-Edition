@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-import ptan.ignite as ptan_ignite
-from datetime import datetime, timedelta
 import argparse
 import random
 import warnings
+from datetime import datetime, timedelta
 
+import gymnasium as gym
+import ptan
+import ptan.ignite as ptan_ignite
 import torch
-import torch.optim as optim
 import torch.nn as nn
-
+import torch.optim as optim
+from ignite.contrib.handlers import tensorboard_logger as tb_logger
 from ignite.engine import Engine
 from ignite.metrics import RunningAverage
-from ignite.contrib.handlers import tensorboard_logger as tb_logger
-
-from lib import dqn_model, common
+from lib import common, dqn_model
 
 NAME = "00_slow_grads"
 
@@ -25,7 +23,7 @@ class DQNAgent(ptan.agent.BaseAgent):
     DQNAgent is a memoryless DQN agent which calculates Q values
     from the observations and  converts them into the actions using action_selector
     """
-    def __init__(self, dqn_model, action_selector, device:torch.device,
+    def __init__(self, dqn_model, action_selector, device: torch.device,
                  preprocessor=ptan.agent.default_states_preprocessor):
         self.dqn_model = dqn_model
         self.action_selector = action_selector

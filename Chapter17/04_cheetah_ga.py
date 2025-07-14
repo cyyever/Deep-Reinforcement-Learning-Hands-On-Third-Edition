@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-from dataclasses import dataclass
 import copy
 import time
+from dataclasses import dataclass
+
+import gymnasium as gym
 import numpy as np
-
 import torch
-import torch.nn as nn
 import torch.multiprocessing as mp
-
-from torch.utils.tensorboard.writer import SummaryWriter
+import torch.nn as nn
 from lib import common
-
+from torch.utils.tensorboard.writer import SummaryWriter
 
 NOISE_STD = 0.01
 POPULATION_SIZE = 2000

@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 import gymnasium as gym
-import ptan
 import numpy as np
-from tensorboardX import SummaryWriter
-
+import ptan
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from tensorboardX import SummaryWriter
 
 GAMMA = 0.99
 LEARNING_RATE = 0.01
@@ -26,7 +25,6 @@ class PGN(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
-
 
 
 def calc_qvals(rewards: list[float]) -> list[float]:

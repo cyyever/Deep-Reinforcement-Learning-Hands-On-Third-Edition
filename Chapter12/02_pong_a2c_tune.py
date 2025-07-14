@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
+import argparse
+import collections
+
 import gymnasium as gym
 import ptan
-import collections
-from ptan.experience import VectorExperienceSourceFirstLast
-import argparse
-
 import torch
-import torch.nn.utils as nn_utils
 import torch.nn.functional as F
+import torch.nn.utils as nn_utils
 import torch.optim as optim
-from ray import tune
-
 from lib import common
+from ptan.experience import VectorExperienceSourceFirstLast
+from ray import tune
 
 MAX_STEPS_TUNE = 4_000_000
 

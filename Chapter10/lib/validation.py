@@ -1,5 +1,4 @@
 import numpy as np
-
 import torch
 
 from lib import environ
@@ -13,9 +12,9 @@ METRICS = (
 
 
 def validation_run(env, net, episodes=100, device="cpu", epsilon=0.02, comission=0.1):
-    stats = { metric: [] for metric in METRICS }
+    stats = {metric: [] for metric in METRICS}
 
-    for episode in range(episodes):
+    for _episode in range(episodes):
         obs, _ = env.reset()
 
         total_reward = 0.0
@@ -61,4 +60,4 @@ def validation_run(env, net, episodes=100, device="cpu", epsilon=0.02, comission
         stats['episode_reward'].append(total_reward)
         stats['episode_steps'].append(episode_steps)
 
-    return { key: np.mean(vals) for key, vals in stats.items() }
+    return {key: np.mean(vals) for key, vals in stats.items()}

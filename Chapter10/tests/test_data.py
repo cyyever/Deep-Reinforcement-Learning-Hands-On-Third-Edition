@@ -1,5 +1,6 @@
-import numpy as np
 import pathlib
+
+import numpy as np
 from lib import data
 
 
@@ -15,10 +16,10 @@ def test_prices_to_relative():
                     close=np.array([2.0]),
                     volume=np.array([10]))
     rel = data.prices_to_relative(t)
-    np.testing.assert_equal(rel.open,  t.open)
-    np.testing.assert_equal(rel.volume,  t.volume)
-    np.testing.assert_equal(rel.high,  np.array([2.0]))  # 200% growth
-    np.testing.assert_equal(rel.low,   np.array([-.5]))  # 50% fall
+    np.testing.assert_equal(rel.open, t.open)
+    np.testing.assert_equal(rel.volume, t.volume)
+    np.testing.assert_equal(rel.high, np.array([2.0]))  # 200% growth
+    np.testing.assert_equal(rel.low, np.array([-.5]))  # 50% fall
     np.testing.assert_equal(rel.close, np.array([1.0]))  # 100% growth
 
 

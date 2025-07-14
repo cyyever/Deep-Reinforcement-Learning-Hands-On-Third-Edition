@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-import os
-import ptan
-import time
-import gymnasium as gym
 import argparse
-from torch.utils.tensorboard.writer import SummaryWriter
+import os
+import time
+
+import gymnasium as gym
 import numpy as np
-
-from lib import model, common
-
+import ptan
 import torch
-import torch.optim as optim
 import torch.nn.functional as F
-
+import torch.optim as optim
+from lib import common, model
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 BATCH_SIZE = 64
@@ -84,7 +82,7 @@ if __name__ == "__main__":
                 buffer.populate(1)
                 rewards_steps = exp_source.pop_rewards_steps()
                 if rewards_steps:
-                    rewards, steps = zip(*rewards_steps)
+                    rewards, steps = zip(*rewards_steps, strict=False)
                     tb_tracker.track("episode_steps", steps[0], frame_idx)
                     tracker.reward(rewards[0], frame_idx)
 
@@ -129,7 +127,7 @@ if __name__ == "__main__":
                     writer.add_scalar("test_steps", steps, frame_idx)
                     if best_reward is None or best_reward < rewards:
                         if best_reward is not None:
-                            print("Best reward updated: {:.3f} -> {:.3f}".format(best_reward, rewards))
+                            print(f"Best reward updated: {best_reward:.3f} -> {rewards:.3f}")
                             name = "best_%+.3f_%d.dat" % (rewards, frame_idx)
                             fname = os.path.join(save_path, name)
                             torch.save(act_net.state_dict(), fname)

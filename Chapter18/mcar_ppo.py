@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-import ptan
-import ptan.ignite as ptan_ignite
-import gymnasium as gym
 import argparse
 import random
-import torch
-import torch.optim as optim
-import torch.nn.functional as F
-
-from ignite.engine import Engine
 from types import SimpleNamespace
-from lib import common, ppo
 
+import gymnasium as gym
+import ptan
+import ptan.ignite as ptan_ignite
+import torch
+import torch.nn.functional as F
+import torch.optim as optim
+from ignite.engine import Engine
+from lib import common, ppo
 
 HYPERPARAMS = {
     'debug': SimpleNamespace(**{
         'env_name':         "CartPole-v0",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': 190.0,
         'run_name':         'debug',
         'actor_lr':         1e-4,
@@ -31,7 +30,7 @@ HYPERPARAMS = {
     }),
     'ppo': SimpleNamespace(**{
         'env_name':         "MountainCar-v0",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': -130.0,
         'run_name':         'ppo',
         'actor_lr':         1e-4,
@@ -46,7 +45,7 @@ HYPERPARAMS = {
     }),
     'noisynet': SimpleNamespace(**{
         'env_name':         "MountainCar-v0",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': -130.0,
         'run_name':         'noisynet',
         'actor_lr':         1e-4,
@@ -61,7 +60,7 @@ HYPERPARAMS = {
     }),
     'counts': SimpleNamespace(**{
         'env_name':         "MountainCar-v0",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': -130.0,
         'run_name':         'counts',
         'actor_lr':         1e-4,
@@ -176,7 +175,6 @@ if __name__ == "__main__":
             res['loss_distill'] = loss_distill_t.item()
 
         return res
-
 
     engine = Engine(process_batch)
     common.setup_ignite(engine, params, exp_source, args.name, extra_metrics=(

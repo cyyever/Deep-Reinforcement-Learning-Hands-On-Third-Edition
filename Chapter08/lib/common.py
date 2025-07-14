@@ -1,20 +1,22 @@
-import random
 import argparse
+import dataclasses
+import random
+import typing as tt
+from datetime import datetime, timedelta
+
 import numpy as np
+import ptan.ignite as ptan_ignite
 import torch
 import torch.nn as nn
-import dataclasses
-from datetime import timedelta, datetime
-import typing as tt
-
-import ptan.ignite as ptan_ignite
-from ptan.actions import EpsilonGreedyActionSelector
-from ptan.experience import ExperienceFirstLast, \
-    ExperienceSourceFirstLast, ExperienceReplayBuffer
-
+from ignite.contrib.handlers import tensorboard_logger as tb_logger
 from ignite.engine import Engine
 from ignite.metrics import RunningAverage
-from ignite.contrib.handlers import tensorboard_logger as tb_logger
+from ptan.actions import EpsilonGreedyActionSelector
+from ptan.experience import (
+    ExperienceFirstLast,
+    ExperienceReplayBuffer,
+    ExperienceSourceFirstLast,
+)
 from ray import tune
 
 SEED = 123
@@ -85,7 +87,7 @@ GAME_PARAMS = {
 
 
 def unpack_batch(batch: list[ExperienceFirstLast]):
-    states, actions, rewards, dones, last_states = [],[],[],[],[]
+    states, actions, rewards, dones, last_states = [], [], [], [], []
     for exp in batch:
         states.append(exp.state)
         actions.append(exp.action)
@@ -134,7 +136,7 @@ class EpsilonTracker:
 
 
 def batch_generator(buffer: ExperienceReplayBuffer, initial: int, batch_size: int) -> \
-        tt.Generator[list[ExperienceFirstLast], None, None]:
+        tt.Generator[list[ExperienceFirstLast]]:
     buffer.populate(initial)
     while True:
         buffer.populate(1)
@@ -205,10 +207,7 @@ def setup_ignite(
             avg_reward = trainer.state.metrics.get('avg_reward')
             max_episodes = params.episodes_to_solve * 1.1
             if trainer.state.episode > tuner_reward_episode and \
-                    avg_reward < tuner_reward_min:
-                trainer.should_terminate = True
-                trainer.state.solved = False
-            elif trainer.state.episode > max_episodes:
+                    avg_reward < tuner_reward_min or trainer.state.episode > max_episodes:
                 trainer.should_terminate = True
                 trainer.state.solved = False
             if trainer.should_terminate:
@@ -219,7 +218,7 @@ def setup_ignite(
 # hyperparams tuner
 TrainFunc = tt.Callable[
     [Hyperparams, torch.device, dict],
-    tt.Optional[int]
+    int | None
 ]
 
 BASE_SPACE = {
@@ -227,9 +226,10 @@ BASE_SPACE = {
     "gamma": tune.choice([0.9, 0.92, 0.95, 0.98, 0.99, 0.995]),
 }
 
+
 def tune_params(
         base_params: Hyperparams, train_func: TrainFunc, device: torch.device,
-        samples: int = 10, extra_space: tt.Optional[tt.Dict[str, tt.Any]] = None,
+        samples: int = 10, extra_space: dict[str, tt.Any] | None = None,
 ):
     """
     Perform hyperparameters tune.
@@ -280,17 +280,14 @@ def train_or_tune(
         args: argparse.Namespace,
         train_func: TrainFunc,
         best_params: Hyperparams,
-        extra_params: tt.Optional[dict] = None,
-        extra_space: tt.Optional[dict] = None,
+        extra_params: dict | None = None,
+        extra_space: dict | None = None,
 ):
     random.seed(SEED)
     torch.manual_seed(SEED)
     device = torch.device(args.dev)
 
-    if args.params == "common":
-        params = GAME_PARAMS['pong']
-    else:
-        params = best_params
+    params = GAME_PARAMS['pong'] if args.params == "common" else best_params
 
     if extra_params is None:
         extra_params = {}

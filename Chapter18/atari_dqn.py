@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-import ptan
 import argparse
 import random
-import numpy as np
-import gymnasium as gym
+from types import SimpleNamespace
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
 import torch.optim as optim
-
-from types import SimpleNamespace
 from ignite.engine import Engine
-
 from lib import common, dqn_extra
 
 STATES_TO_EVALUATE = 1000

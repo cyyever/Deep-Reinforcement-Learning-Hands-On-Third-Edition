@@ -3,15 +3,16 @@
 Tool saves trajectories from several games using the given model, vectorized version
 """
 import sys
+
 sys.path.append(".")
-import pathlib
 import argparse
+import pathlib
+
+import gymnasium as gym
+import numpy as np
 import torch
 import torch.nn.functional as F
-import numpy as np
-import gymnasium as gym
-
-from lib import model, wob, demos
+from lib import demos, model, wob
 
 ENV_NAME = 'miniwob/count-sides-v1'
 N_ENVS = 4
@@ -49,7 +50,7 @@ if __name__ == "__main__":
         ]
 
         new_obs, rewards, dones, is_trs, infos = env.step(actions)
-        for i, (action, reward, done, is_tr) in enumerate(zip(actions, rewards, dones, is_trs)):
+        for i, (action, reward, done, is_tr) in enumerate(zip(actions, rewards, dones, is_trs, strict=False)):
             b_x, b_y = wob.action_to_bins(action)
             print(f"{step_idx}-{i}: act={action}, b={b_x}_{b_y}, r={reward}, done={done}, tr={is_tr}")
             p = out_dir / str(i) / f"scr_{step_idx:03d}_act={action}_b={b_x}-{b_y}_r={reward:.2f}_d={done:d}_tr={is_tr:d}.png"

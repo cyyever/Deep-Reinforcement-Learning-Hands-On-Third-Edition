@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
 import typing as tt
 
+import gymnasium as gym
+import ptan
 import torch
 import torch.optim as optim
-
 from ignite.engine import Engine
-
 from lib import common, dqn_extra
 
 NAME = "04_noisy"
@@ -28,9 +26,8 @@ BEST_PONG = common.Hyperparams(
 )
 
 
-
 def train(params: common.Hyperparams,
-          device: torch.device, extra: dict) -> tt.Optional[int]:
+          device: torch.device, extra: dict) -> int | None:
     env = gym.make(params.env_name)
     env = ptan.common.wrappers.wrap_dqn(env)
 
@@ -61,7 +58,7 @@ def train(params: common.Hyperparams,
             tgt_net.sync()
         if engine.state.iteration % NOISY_SNR_EVERY_ITERS == 0:
             for layer_idx, sigma_l2 in enumerate(net.noisy_layers_sigma_snr()):
-                engine.state.metrics[f'snr_{layer_idx+1}'] = sigma_l2
+                engine.state.metrics[f'snr_{layer_idx + 1}'] = sigma_l2
         return {
             "loss": loss_v.item(),
         }

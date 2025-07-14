@@ -2,9 +2,10 @@
 """
 Benchmark various Priority Replay Buffer variants
 """
-import timeit
-import numpy as np
 import collections
+import timeit
+
+import numpy as np
 
 SIZES = [10**n for n in (3, 4, 5)]
 DATA_SHAPE = (84, 84, 4)
@@ -36,7 +37,7 @@ class PrioReplayBufferDeque:
         return samples, indices, weights
 
     def update_priorities(self, batch_indices, batch_priorities):
-        for idx, prio in zip(batch_indices, batch_priorities):
+        for idx, prio in zip(batch_indices, batch_priorities, strict=False):
             self.priorities[idx] = prio
 
 
@@ -76,7 +77,7 @@ class PrioReplayBufferList:
         return samples, indices, weights
 
     def update_priorities(self, batch_indices, batch_priorities):
-        for idx, prio in zip(batch_indices, batch_priorities):
+        for idx, prio in zip(batch_indices, batch_priorities, strict=False):
             self.priorities[idx] = prio
 
 
@@ -86,28 +87,27 @@ def fill_buf(buf, size):
 
 
 def bench_buffer(buf_class):
-    print("Benchmarking %s" % buf_class.__name__)
+    print(f"Benchmarking {buf_class.__name__}")
 
     for size in SIZES:
         print("  Test size %d" % size)
         ns = globals()
         ns.update(locals())
         t = timeit.timeit('fill_buf(buf, size)', setup='buf = buf_class(size)', number=REPEAT_NUMBER, globals=ns)
-        print("  * Initial fill:\t%.2f items/s" % (size*REPEAT_NUMBER / t))
+        print("  * Initial fill:\t%.2f items/s" % (size * REPEAT_NUMBER / t))
         buf = buf_class(size)
         fill_buf(buf, size)
         ns.update(locals())
         t = timeit.timeit('fill_buf(buf, size)', number=REPEAT_NUMBER, globals=ns)
-        print("  * Append:\t\t%.2f items/s" % (size*REPEAT_NUMBER / t))
-        t = timeit.timeit('buf.sample(4)', number=REPEAT_NUMBER*100, globals=ns)
-        print("  * Sample 4:\t\t%.2f items/s" % (REPEAT_NUMBER*100 / t))
-        t = timeit.timeit('buf.sample(8)', number=REPEAT_NUMBER*100, globals=ns)
-        print("  * Sample 8:\t\t%.2f items/s" % (REPEAT_NUMBER*100 / t))
-        t = timeit.timeit('buf.sample(16)', number=REPEAT_NUMBER*100, globals=ns)
-        print("  * Sample 16:\t\t%.2f items/s" % (REPEAT_NUMBER*100 / t))
-        t = timeit.timeit('buf.sample(32)', number=REPEAT_NUMBER*100, globals=ns)
-        print("  * Sample 32:\t\t%.2f items/s" % (REPEAT_NUMBER*100 / t))
-
+        print("  * Append:\t\t%.2f items/s" % (size * REPEAT_NUMBER / t))
+        t = timeit.timeit('buf.sample(4)', number=REPEAT_NUMBER * 100, globals=ns)
+        print("  * Sample 4:\t\t%.2f items/s" % (REPEAT_NUMBER * 100 / t))
+        t = timeit.timeit('buf.sample(8)', number=REPEAT_NUMBER * 100, globals=ns)
+        print("  * Sample 8:\t\t%.2f items/s" % (REPEAT_NUMBER * 100 / t))
+        t = timeit.timeit('buf.sample(16)', number=REPEAT_NUMBER * 100, globals=ns)
+        print("  * Sample 16:\t\t%.2f items/s" % (REPEAT_NUMBER * 100 / t))
+        t = timeit.timeit('buf.sample(32)', number=REPEAT_NUMBER * 100, globals=ns)
+        print("  * Sample 32:\t\t%.2f items/s" % (REPEAT_NUMBER * 100 / t))
 
 
 if __name__ == "__main__":

@@ -1,19 +1,16 @@
-import numpy as np
-import typing as tt
 import collections
+import typing as tt
 from dataclasses import dataclass
 
-from magent2.builtin.config.forest import get_config as forest_config
-from magent2.builtin.config.double_attack import get_config as double_attack_config
-from magent2.builtin.config.battle import get_config as battle_config
-from magent2.gridworld import GridWorld
-
+import numpy as np
 from gymnasium.utils import EzPickle
+from magent2.builtin.config.battle import get_config as battle_config
+from magent2.builtin.config.double_attack import get_config as double_attack_config
+from magent2.builtin.config.forest import get_config as forest_config
 from magent2.environments.magent_env import magent_parallel_env
-
+from magent2.gridworld import GridWorld
+from ptan.agent import AgentStates, BaseAgent, States
 from ptan.experience import ExperienceFirstLast
-from ptan.agent import BaseAgent, States, AgentStates
-
 
 MAP_SIZE = 64
 COUNT_WALLS = int(MAP_SIZE * MAP_SIZE * 0.04)
@@ -31,8 +28,8 @@ class ForestEnv(magent_parallel_env, EzPickle):
     }
 
     def __init__(self, map_size: int = MAP_SIZE, max_cycles: int = MAX_CYCLES,
-                 extra_features: bool = False, render_mode: tt.Optional[str] = None,
-                 seed: tt.Optional[int] = None, count_walls: int = COUNT_WALLS,
+                 extra_features: bool = False, render_mode: str | None = None,
+                 seed: int | None = None, count_walls: int = COUNT_WALLS,
                  count_deer: int = COUNT_DEER, count_tigers: int = COUNT_TIGERS):
         EzPickle.__init__(self, map_size, max_cycles, extra_features, render_mode, seed)
         env = GridWorld(self.get_config(map_size), map_size=map_size)
@@ -74,8 +71,8 @@ class DoubleAttackEnv(magent_parallel_env, EzPickle):
         map_size: int = MAP_SIZE,
         max_cycles: int = MAX_CYCLES,
         extra_features: bool = False,
-        render_mode: tt.Optional[str] = None,
-        seed: tt.Optional[int] = None,
+        render_mode: str | None = None,
+        seed: int | None = None,
         count_walls: int = COUNT_WALLS,
         count_deer: int = COUNT_DEER,
         count_tigers: int = COUNT_TIGERS,
@@ -127,8 +124,8 @@ class BattleEnv(magent_parallel_env, EzPickle):
         map_size: int = MAP_SIZE,
         max_cycles: int = MAX_CYCLES,
         extra_features: bool = False,
-        render_mode: tt.Optional[str] = None,
-        seed: tt.Optional[int] = None,
+        render_mode: str | None = None,
+        seed: int | None = None,
         count_walls: int = COUNT_WALLS,
         count_a: int = COUNT_BATTLERS,
         count_b: int = COUNT_BATTLERS,
@@ -175,9 +172,9 @@ class MAgentExperienceSourceFirstLast:
     """
     2-step experience source for MAgent parallel environment
     """
-    def __init__(self, env: magent_parallel_env, agents_by_group: tt.Dict[str, BaseAgent],
-                 track_reward_group: str, env_seed: tt.Optional[int] = None,
-                 filter_group: tt.Optional[str] = None):
+    def __init__(self, env: magent_parallel_env, agents_by_group: dict[str, BaseAgent],
+                 track_reward_group: str, env_seed: int | None = None,
+                 filter_group: str | None = None):
         self.env = env
         self.agents_by_group = agents_by_group
         self.track_reward_group = track_reward_group
@@ -200,7 +197,7 @@ class MAgentExperienceSourceFirstLast:
         a, _ = agent_id.split("_", maxsplit=1)
         return a
 
-    def __iter__(self) -> tt.Generator[ExperienceFirstLastMARL, None, None]:
+    def __iter__(self) -> tt.Generator[ExperienceFirstLastMARL]:
         # iterate episodes
         while True:
             # initial observation
@@ -267,8 +264,8 @@ class MAgentExperienceSourceFirstLast:
             self.total_steps = []
         return r
 
-    def pop_rewards_steps(self) -> list[tt.Tuple[float, int]]:
-        res = list(zip(self.total_rewards, self.total_steps))
+    def pop_rewards_steps(self) -> list[tuple[float, int]]:
+        res = list(zip(self.total_rewards, self.total_steps, strict=False))
         if res:
             self.total_rewards, self.total_steps = [], []
         return res
@@ -282,11 +279,8 @@ class RandomMAgent(BaseAgent):
     def __call__(
             self, states: States,
             agent_states: AgentStates = None,
-    ) -> tt.Tuple[np.ndarray, AgentStates]:
+    ) -> tuple[np.ndarray, AgentStates]:
         n_actions = self.env.get_action_space(self.handle)[0]
-        if isinstance(states, list):
-            size = len(states)
-        else:
-            size = states.shape[0]
+        size = len(states) if isinstance(states, list) else states.shape[0]
         res = np.random.randint(n_actions, size=size)
         return res, agent_states

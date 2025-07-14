@@ -1,7 +1,7 @@
+import numpy as np
 import ptan
 import torch
 from torch import nn
-import numpy as np
 
 
 class DQNNet(nn.Module):

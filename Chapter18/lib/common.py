@@ -1,26 +1,24 @@
-import gymnasium as gym
 import collections
-import numpy as np
 import warnings
-import torch
-import torch.nn as nn
-from datetime import timedelta, datetime
-from types import SimpleNamespace
 from collections.abc import Iterable
+from datetime import datetime, timedelta
+from types import SimpleNamespace
 
+import gymnasium as gym
+import numpy as np
 import ptan
 import ptan.ignite as ptan_ignite
+import torch
+import torch.nn as nn
+from ignite.contrib.handlers import tensorboard_logger as tb_logger
 from ignite.engine import Engine
 from ignite.metrics import RunningAverage
-from ignite.contrib.handlers import tensorboard_logger as tb_logger
-
 
 SEED = 123
 
 
-
 def unpack_batch(batch: list[ptan.experience.ExperienceFirstLast]):
-    states, actions, rewards, dones, last_states = [],[],[],[],[]
+    states, actions, rewards, dones, last_states = [], [], [], [], []
     for exp in batch:
         state = np.asarray(exp.state)
         states.append(state)
@@ -178,7 +176,7 @@ def setup_ignite(engine: Engine, params: SimpleNamespace,
 
 
 class PseudoCountRewardWrapper(gym.Wrapper):
-    def __init__(self, env: gym.Env, hash_function = lambda o: o,
+    def __init__(self, env: gym.Env, hash_function=lambda o: o,
                  reward_scale: float = 1.0):
         super().__init__(env)
         self.hash_function = hash_function
@@ -198,7 +196,7 @@ class PseudoCountRewardWrapper(gym.Wrapper):
         """
         h = self.hash_function(obs)
         self.counts[h] += 1
-        return np.sqrt(1/self.counts[h])
+        return np.sqrt(1 / self.counts[h])
 
 
 class NetworkDistillationRewardWrapper(gym.Wrapper):

@@ -1,24 +1,21 @@
 #!/usr/bin/env python3
 import pathlib
-import gymnasium as gym
-import ptan
-from ptan.experience import ExperienceFirstLast
 import typing as tt
-import numpy as np
-from ray import tune
 
-import torch
-from torch import optim
-import torch.nn.functional as F
-
-from ignite.engine import Engine
-
-from lib import common, dqn_extra
-
+import gymnasium as gym
 import matplotlib as mpl
+import numpy as np
+import ptan
+import torch
+import torch.nn.functional as F
+from ignite.engine import Engine
+from lib import common, dqn_extra
+from ptan.experience import ExperienceFirstLast
+from ray import tune
+from torch import optim
+
 mpl.use("Agg")
 import matplotlib.pylab as plt
-
 
 NAME = "07_distrib"
 STATES_TO_EVALUATE = 64
@@ -53,7 +50,7 @@ def save_state_images(
     for batch_idx in range(batch_size):
         plt.clf()
         for action_idx in range(num_actions):
-            plt.subplot(num_actions, 1, action_idx+1)
+            plt.subplot(num_actions, 1, action_idx + 1)
             plt.bar(p, action_prob[batch_idx, action_idx], width=0.5)
         plt.savefig("%s/%05d_%08d.png" % (
             path_prefix, batch_idx, game_idx))
@@ -88,7 +85,7 @@ def calc_loss(batch: list[ExperienceFirstLast], net: dqn_extra.DistributionalDQN
 
 
 def train(params: common.Hyperparams,
-          device: torch.device, extra: dict) -> tt.Optional[int]:
+          device: torch.device, extra: dict) -> int | None:
     img_path = extra.get("img_path")
     env = gym.make(params.env_name)
     env = ptan.common.wrappers.wrap_dqn(env)

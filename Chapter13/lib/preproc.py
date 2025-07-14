@@ -1,16 +1,17 @@
-import gymnasium as gym
 import logging
 import typing as tt
 
+import gymnasium as gym
 import textworld.gym.envs
 import torch
 import torch.nn as nn
 import torch.nn.utils.rnn as rnn_utils
 from sentence_transformers import SentenceTransformer
+
 from . import common
 
-
 KEY_ADM_COMMANDS = "admissible_commands"
+
 
 class TextWorldPreproc(gym.Wrapper):
     """
@@ -25,13 +26,13 @@ class TextWorldPreproc(gym.Wrapper):
     OBS_FIELD = "obs"
 
     def __init__(
-            self, env: gym.Env, vocab_rev: tt.Optional[tt.Dict[str, int]],
+            self, env: gym.Env, vocab_rev: dict[str, int] | None,
             encode_raw_text: bool = False,
             encode_extra_fields: tt.Iterable[str] = ('description', 'inventory'),
             copy_extra_fields: tt.Iterable[str] = (),
             use_admissible_commands: bool = True, keep_admissible_commands: bool = False,
-            use_intermediate_reward: bool = True, tokens_limit: tt.Optional[int] = None,
-            reward_wrong_last_command: tt.Optional[float] = None
+            use_intermediate_reward: bool = True, tokens_limit: int | None = None,
+            reward_wrong_last_command: float | None = None
     ):
         """
         :param env: TextWorld env to be wrapped
@@ -100,7 +101,7 @@ class TextWorldPreproc(gym.Wrapper):
                 result[field] = extra_info[field]
         return result
 
-    def reset(self, seed: tt.Optional[int] = None):
+    def reset(self, seed: int | None = None):
         res, extra = self.env.reset()
         self._cmd_hist = []
         return self._encode(res, extra), extra
@@ -139,7 +140,7 @@ class LocationWrapper(gym.Wrapper):
         self._seen_locations = set()
         self._cur_location = None
 
-    def reset(self, *, seed: tt.Optional[int] = None):
+    def reset(self, *, seed: int | None = None):
         self._seen_locations.clear()
         self._cur_location = None
         obs, extra = self.env.reset(seed=seed)
@@ -187,7 +188,7 @@ class RelativeDirectionWrapper(gym.Wrapper):
 
     NEW_ACTIONS_DELTAS = {
         "go " + d: delta
-        for d, delta in zip(RELATIVE_DIRS, (1, 0, 3, 2))
+        for d, delta in zip(RELATIVE_DIRS, (1, 0, 3, 2), strict=False)
     }
 
     def __init__(self, env: textworld.gym.envs.TextworldGymEnv):
@@ -225,7 +226,7 @@ class RelativeDirectionWrapper(gym.Wrapper):
         return new_dir
 
     @classmethod
-    def update_vocabs(cls, vocab: tt.Dict[int, str], vocab_rev: tt.Dict[str, int]):
+    def update_vocabs(cls, vocab: dict[int, str], vocab_rev: dict[str, int]):
         """
         Update vocabularies to include new action words
         :param vocab: forward vocabulary
@@ -233,7 +234,7 @@ class RelativeDirectionWrapper(gym.Wrapper):
         :return:
         """
         for word in cls.RELATIVE_DIRS:
-            if word not in vocab_rev.keys():
+            if word not in vocab_rev:
                 next_idx = len(vocab)
                 vocab[next_idx] = word
                 vocab_rev[word] = next_idx
@@ -329,7 +330,7 @@ class Preprocessor(nn.Module):
         return encoder(batch_seq)
 
     def encode_observations(self, observations: list[dict]) -> torch.Tensor:
-        sequences = [obs[TextWorldPreproc.OBS_FIELD] for obs in observations ]
+        sequences = [obs[TextWorldPreproc.OBS_FIELD] for obs in observations]
         res_t = self.encode_sequences(sequences)
         if not self._extra_flags:
             return res_t
@@ -345,7 +346,7 @@ class Preprocessor(nn.Module):
         :return: tensor with concatenated encoder outputs for every batch sample
         """
         data = []
-        for enc, enc_batch in zip(self.encoders, zip(*batches)):
+        for enc, enc_batch in zip(self.encoders, zip(*batches, strict=False), strict=False):
             data.append(self._apply_encoder(enc_batch, enc))
         res_t = torch.cat(data, dim=1)
         return res_t
@@ -398,7 +399,7 @@ class TransformerPreprocessor:
         res_t = torch.cat([res_t, extra_t], dim=1)
         return res_t
 
-    def encode_sequences(self, batches: list[tt.Tuple[str, ...]]) -> torch.Tensor:
+    def encode_sequences(self, batches: list[tuple[str, ...]]) -> torch.Tensor:
         """
         Forward pass of Preprocessor
         :param batches: list of tuples with strings

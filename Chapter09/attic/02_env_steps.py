@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
+import argparse
+import random
+from datetime import datetime, timedelta
+
 import gym
 import ptan
 import ptan.ignite as ptan_ignite
-from datetime import datetime, timedelta
-import argparse
-import random
-
 import torch
 import torch.optim as optim
-
+from ignite.contrib.handlers import tensorboard_logger as tb_logger
 from ignite.engine import Engine
 from ignite.metrics import RunningAverage
-from ignite.contrib.handlers import tensorboard_logger as tb_logger
-
-from lib import dqn_model, common
-
+from lib import common, dqn_model
 
 NAME = "02_env_steps"
 

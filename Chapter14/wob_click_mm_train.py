@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import random
+
 import gymnasium as gym
-import argparse
 import numpy as np
-from torch.utils.tensorboard.writer import SummaryWriter
-
-from lib import wob, model, common, demos
-
 import ptan
-
 import torch
-import torch.nn.utils as nn_utils
 import torch.nn.functional as F
+import torch.nn.utils as nn_utils
 import torch.optim as optim
-
+from lib import common, demos, model, wob
+from torch.utils.tensorboard.writer import SummaryWriter
 
 ENVS_COUNT = 8
 ENV_NAME = "miniwob/click-button-v1"
@@ -91,7 +88,7 @@ if __name__ == "__main__":
             for step_idx, exp in enumerate(exp_source):
                 rewards_steps = exp_source.pop_rewards_steps()
                 if rewards_steps:
-                    rewards, steps = zip(*rewards_steps)
+                    rewards, steps = zip(*rewards_steps, strict=False)
                     tb_tracker.track("episode_steps", np.mean(steps), step_idx)
 
                     mean_reward = tracker.reward(np.mean(rewards), step_idx)
@@ -102,13 +99,13 @@ if __name__ == "__main__":
                                 fname = os.path.join(saves_path, name)
                                 torch.save(net.state_dict(), fname + ".dat")
                                 preprocessor.save(fname + ".pre")
-                                print("Best reward updated: {:.3f} -> {:.3f}".format(best_reward, mean_reward))
+                                print(f"Best reward updated: {best_reward:.3f} -> {mean_reward:.3f}")
                             best_reward = mean_reward
                 batch.append(exp)
                 if len(batch) < BATCH_SIZE:
                     continue
 
-                if demo_samples and step_idx < DEMO_FRAMES :
+                if demo_samples and step_idx < DEMO_FRAMES:
                     if random.random() < DEMO_PROB:
                         random.shuffle(demo_samples)
                         demo_batch = demo_samples[:BATCH_SIZE]

@@ -3,15 +3,13 @@
 Web interface to label stored data
 """
 import argparse
-
-from nicegui import ui
 import typing as tt
 
-from lib import ui_tools, rlhf
+from lib import rlhf, ui_tools
+from nicegui import ui
 
-db: tt.Optional[rlhf.Database] = None
+db: rlhf.Database | None = None
 to_label: list[rlhf.HumanLabel] = []
-
 
 
 def label_ui():

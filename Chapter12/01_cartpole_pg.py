@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
 import argparse
-import numpy as np
-from torch.utils.tensorboard.writer import SummaryWriter
 
+import gymnasium as gym
+import numpy as np
+import ptan
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.utils.tensorboard.writer import SummaryWriter
 
 GAMMA = 0.99
 LEARNING_RATE = 0.001
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     env = gym.make("CartPole-v1")
-    writer = SummaryWriter(comment="-cartpole-pg" + "-baseline=%s" % args.baseline)
+    writer = SummaryWriter(comment="-cartpole-pg" + f"-baseline={args.baseline}")
 
     net = PGN(env.observation_space.shape[0], env.action_space.n)
     print(net)

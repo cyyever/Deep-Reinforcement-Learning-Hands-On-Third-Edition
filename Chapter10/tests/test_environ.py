@@ -1,9 +1,6 @@
-import pytest
-
 import numpy as np
-
+import pytest
 from lib import data, environ
-
 
 
 def test_env_simple():
@@ -24,10 +21,9 @@ def prices() -> data.Prices:
     return data.prices_to_relative(p)
 
 
-
 def test_states_basic():
     s = environ.State(bars_count=4, commission_perc=0.0, reset_on_close=False, volumes=False)
-    assert s.shape == (4*3+2, )
+    assert s.shape == (4 * 3 + 2, )
 
 
 def test_basic1d(prices):
@@ -75,7 +71,7 @@ def test_reward(prices):
 
     r, done = s.step(environ.Actions.Skip)
     assert not done
-    assert r == pytest.approx(-2/3 * 100.0)
+    assert r == pytest.approx(-2 / 3 * 100.0)
     assert s._cur_close() == pytest.approx(1.0)
 
     r, done = s.step(environ.Actions.Skip)

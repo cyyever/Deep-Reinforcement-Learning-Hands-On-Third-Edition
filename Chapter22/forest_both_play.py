@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import argparse
-import torch
+
 import ptan
-from lib import model, data
-
+import torch
 from gymnasium.wrappers.monitoring.video_recorder import VideoRecorder
-
+from lib import data, model
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -105,8 +104,8 @@ if __name__ == "__main__":
                 total_deer_reward += reward
 
     print("Episode steps: %d" % total_steps)
-    print("Total tiger reward: %.3f" % total_tiger_reward)
+    print(f"Total tiger reward: {total_tiger_reward:.3f}")
     print("Mean tiger reward: %.3f" % (total_tiger_reward / args.tigers))
-    print("Total deer reward: %.3f" % total_deer_reward)
+    print(f"Total deer reward: {total_deer_reward:.3f}")
     print("Mean deer reward: %.3f" % (total_deer_reward / args.deer))
     recorder.close()

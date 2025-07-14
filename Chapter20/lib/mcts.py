@@ -1,13 +1,13 @@
 """
 Monte-Carlo Tree Search
 """
-import typing as tt
 import math as m
+import typing as tt
+
 import numpy as np
+import torch.nn.functional as F
 
 from lib import game, model
-
-import torch.nn.functional as F
 
 
 class MCTS:
@@ -17,13 +17,13 @@ class MCTS:
     def __init__(self, c_puct: float = 1.0):
         self.c_puct = c_puct
         # count of visits, state_int -> [N(s, a)]
-        self.visit_count: tt.Dict[int, list[int]] = {}
+        self.visit_count: dict[int, list[int]] = {}
         # total value of the state's act, state_int -> [W(s, a)]
-        self.value: tt.Dict[int, list[float]] = {}
+        self.value: dict[int, list[float]] = {}
         # average value of actions, state_int -> [Q(s, a)]
-        self.value_avg: tt.Dict[int, list[float]] = {}
+        self.value_avg: dict[int, list[float]] = {}
         # prior probability of actions, state_int -> [P(s,a)]
-        self.probs: tt.Dict[int, list[float]] = {}
+        self.probs: dict[int, list[float]] = {}
 
     def clear(self):
         self.visit_count.clear()
@@ -63,10 +63,10 @@ class MCTS:
             # choose action to take, in the root node add the Dirichlet noise to the probs
             if cur_state == state_int:
                 noises = np.random.dirichlet([0.03] * game.GAME_COLS)
-                probs = [0.75 * prob + 0.25 * noise for prob, noise in zip(probs, noises)]
+                probs = [0.75 * prob + 0.25 * noise for prob, noise in zip(probs, noises, strict=False)]
             score = [
-                value + self.c_puct*prob*total_sqrt/(1+count)
-                for value, prob, count in zip(values_avg, probs, counts)
+                value + self.c_puct * prob * total_sqrt / (1 + count)
+                for value, prob, count in zip(values_avg, probs, counts, strict=False)
             ]
             invalid_actions = set(range(game.GAME_COLS)) - \
                               set(game.possible_moves(cur_state))
@@ -78,7 +78,7 @@ class MCTS:
             if won:
                 # if somebody won the game, the value of the final state is -1 (as it is on opponent's turn)
                 value = -1.0
-            cur_player = 1-cur_player
+            cur_player = 1 - cur_player
             # check for the draw
             moves_count = len(game.possible_moves(cur_state))
             if value is None and moves_count == 0:
@@ -125,10 +125,10 @@ class MCTS:
 
             # create the nodes
             for (leaf_state, states, actions), value, prob in \
-                    zip(expand_queue, values, probs):
-                self.visit_count[leaf_state] = [0]*game.GAME_COLS
-                self.value[leaf_state] = [0.0]*game.GAME_COLS
-                self.value_avg[leaf_state] = [0.0]*game.GAME_COLS
+                    zip(expand_queue, values, probs, strict=False):
+                self.visit_count[leaf_state] = [0] * game.GAME_COLS
+                self.value[leaf_state] = [0.0] * game.GAME_COLS
+                self.value_avg[leaf_state] = [0.0] * game.GAME_COLS
                 self.probs[leaf_state] = prob
                 backup_queue.append((value, states, actions))
 
@@ -136,7 +136,7 @@ class MCTS:
         for value, states, actions in backup_queue:
             # leaf state is not stored in states and actions, so the value of the leaf will be the value of the opponent
             cur_value = -value
-            for state_int, action in zip(states[::-1], actions[::-1]):
+            for state_int, action in zip(states[::-1], actions[::-1], strict=False):
                 self.visit_count[state_int][action] += 1
                 self.value[state_int][action] += cur_value
                 self.value_avg[state_int][action] = self.value[state_int][action] / \

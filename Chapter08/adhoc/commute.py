@@ -1,5 +1,6 @@
-import numpy as np
 import matplotlib as mpl
+import numpy as np
+
 mpl.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -10,7 +11,7 @@ if __name__ == "__main__":
     v = np.concatenate((v1, v2))
     mean_time = v.mean()
     plt.hist(v, normed=True, bins=100)
-    plt.title("Car commute time distribution\nmean=%.2f mins" % mean_time)
+    plt.title(f"Car commute time distribution\nmean={mean_time:.2f} mins")
     plt.xlabel("Time, minutes")
     plt.ylabel("Probability")
     plt.savefig("commute-car.png")
@@ -21,7 +22,7 @@ if __name__ == "__main__":
     v = np.concatenate((v1, v2))
     mean_time = v.mean()
     plt.hist(v, normed=True, bins=100)
-    plt.title("Train commute time distribution\nmean=%.2f mins" % mean_time)
+    plt.title(f"Train commute time distribution\nmean={mean_time:.2f} mins")
     plt.xlabel("Time, minutes")
     plt.ylabel("Probability")
     plt.savefig("commute-train.png")

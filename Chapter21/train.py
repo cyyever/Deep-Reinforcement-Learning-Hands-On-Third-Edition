@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
+import argparse
+import collections
+import logging
 import os
 import time
-import argparse
-import logging
-import numpy as np
-import collections
 
+import numpy as np
 import torch
+import torch.nn.functional as F
 import torch.optim as optim
 import torch.optim.lr_scheduler as scheduler
-import torch.nn.functional as F
-
+from libcube import conf, cubes, model
 from torch.utils.tensorboard.writer import SummaryWriter
-
-from libcube import cubes
-from libcube import model
-from libcube import conf
 
 log = logging.getLogger("train")
 
@@ -52,8 +48,8 @@ if __name__ == "__main__":
     best_loss = None
 
     log.info("Generate scramble buffer...")
-    scramble_buf = collections.deque(maxlen=config.scramble_buffer_batches*config.train_batch_size)
-    scramble_buf.extend(model.make_scramble_buffer(cube_env, config.train_batch_size*2, config.train_scramble_depth))
+    scramble_buf = collections.deque(maxlen=config.scramble_buffer_batches * config.train_batch_size)
+    scramble_buf.extend(model.make_scramble_buffer(cube_env, config.train_batch_size * 2, config.train_scramble_depth))
     log.info("Generated buffer of size %d", len(scramble_buf))
 
     while True:
@@ -130,7 +126,7 @@ if __name__ == "__main__":
             if best_loss is None:
                 best_loss = m_loss
             elif best_loss > m_loss:
-                name = os.path.join(save_path, "best_%.4e.dat" % m_loss)
+                name = os.path.join(save_path, f"best_{m_loss:.4e}.dat")
                 torch.save(net.state_dict(), name)
                 best_loss = m_loss
 

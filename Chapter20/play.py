@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
+import argparse
 import sys
 import time
-import argparse
-
-from lib import game, model
 
 import torch
-
+from lib import game, model
 
 MCTS_SEARCHES = 10
 MCTS_BATCH_SIZE = 8
@@ -48,7 +46,7 @@ if __name__ == "__main__":
             speed_games = args.rounds / (time.time() - ts)
             name_1, name_2 = n1[0], n2[0]
             print("%s vs %s -> w=%d, l=%d, d=%d" % (name_1, name_2, wins, losses, draws))
-            sys.stderr.write("Speed %.2f games/s\n" % speed_games)
+            sys.stderr.write(f"Speed {speed_games:.2f} games/s\n")
             sys.stdout.flush()
             game.update_counts(total_agent, name_1, (wins, losses, draws))
             game.update_counts(total_agent, name_2, (losses, wins, draws))

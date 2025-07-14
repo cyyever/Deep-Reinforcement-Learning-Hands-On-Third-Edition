@@ -4,12 +4,13 @@ import time
 
 sys.path.append(".")
 import typing as tt
+
 from lib import wob
 
 RENDER_ENV = True
 
 
-def close_bins(elems: tt.Tuple[dict, ...]) -> int:
+def close_bins(elems: tuple[dict, ...]) -> int:
     elem_ids = {e['ref']: e for e in elems}
     close_elem = None
     for e in elems:
@@ -20,12 +21,13 @@ def close_bins(elems: tt.Tuple[dict, ...]) -> int:
     while close_elem['ref'] < 0:
         close_elem = elem_ids[close_elem['parent']]
     print(close_elem)
-    x = close_elem['left'][0] #+ close_elem['width'][0] / 2.0
-    y = close_elem['top'][0] #+ close_elem['height'][0] / 2.0
+    x = close_elem['left'][0]  # + close_elem['width'][0] / 2.0
+    y = close_elem['top'][0]  # + close_elem['height'][0] / 2.0
     i = int(x // wob.BIN_SIZE)
     j = int((y - wob.Y_OFS) // wob.BIN_SIZE) - 1
-    print(f"found elem x={x}, y={y} -> i={i}, j={j} = {i} + {j*16}")
-    return i + 16*j
+    print(f"found elem x={x}, y={y} -> i={i}, j={j} = {i} + {j * 16}")
+    return i + 16 * j
+
 
 if __name__ == "__main__":
     env = wob.MiniWoBClickWrapper.create(

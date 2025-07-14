@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import random
 import argparse
 import collections
+import random
 import typing as tt
 
 SEED = 2
@@ -26,7 +26,7 @@ def do_action(state: int, action: int) -> int:
     """
     # left action always succeeds and brings us to the left
     if action == 0:
-        return state-1
+        return state - 1
 
     if state == 1:
         return random.choices([1, 2], weights=[0.4, 0.6])[0]
@@ -57,5 +57,5 @@ if __name__ == "__main__":
             state = 1
             episode_step = 0
 
-    for state in range(1, args.env_len+1):
+    for state in range(1, args.env_len + 1):
         print("%d:\t%d" % (state, states_count[state]))

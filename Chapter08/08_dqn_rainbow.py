@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-import gymnasium as gym
-import ptan
-from ptan.experience import ExperienceFirstLast
 import typing as tt
+
+import gymnasium as gym
 import numpy as np
-
+import ptan
 import torch
-from torch import optim
-
 from ignite.engine import Engine
-
 from lib import common, dqn_extra
+from ptan.experience import ExperienceFirstLast
+from torch import optim
 
 NAME = "08_rainbow"
 N_STEPS = 3
@@ -35,7 +33,7 @@ def calc_loss(
         batch: list[ExperienceFirstLast],
         batch_weights: np.ndarray, net: dqn_extra.RainbowDQN,
         tgt_net: dqn_extra.RainbowDQN, gamma: float,
-        device: torch.device) -> tt.Tuple[torch.Tensor, np.ndarray]:
+        device: torch.device) -> tuple[torch.Tensor, np.ndarray]:
     states, actions, rewards, dones, next_states = \
         common.unpack_batch(batch)
 
@@ -56,7 +54,7 @@ def calc_loss(
 
 
 def train(params: common.Hyperparams,
-          device: torch.device, extra: dict) -> tt.Optional[int]:
+          device: torch.device, extra: dict) -> int | None:
     alpha = extra['alpha']
     n_steps = extra['n_steps']
     env = gym.make(params.env_name)

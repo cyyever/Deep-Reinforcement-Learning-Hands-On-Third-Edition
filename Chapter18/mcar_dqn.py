@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
+import argparse
+import random
+from types import SimpleNamespace
+
+import gymnasium as gym
 import numpy as np
 import ptan
 import ptan.ignite as ptan_ignite
-import gymnasium as gym
-import argparse
-import random
 import torch
 import torch.optim as optim
-from types import SimpleNamespace
-
 from ignite.engine import Engine
-
 from lib import common, dqn_extra
-
 
 HYPERPARAMS = {
     'egreedy': SimpleNamespace(**{
         'env_name':         "MountainCar-v0",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': -130.0,
         'run_name':         'egreedy',
         'replay_size':      100000,
@@ -33,7 +31,7 @@ HYPERPARAMS = {
     }),
     'egreedy-long': SimpleNamespace(**{
         'env_name':         "MountainCar-v0",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': -130.0,
         'run_name':         'egreedy-long',
         'replay_size':      100000,
@@ -49,7 +47,7 @@ HYPERPARAMS = {
     }),
     'noisynet': SimpleNamespace(**{
         'env_name':         "MountainCar-v0",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': -130.0,
         'run_name':         'noisynet',
         'replay_size':      100000,
@@ -62,7 +60,7 @@ HYPERPARAMS = {
     }),
     'counts': SimpleNamespace(**{
         'env_name':         "MountainCar-v0",
-        'stop_reward':      None,
+        'stop_reward': None,
         'stop_test_reward': -130.0,
         'run_name':         'counts',
         'replay_size':      100000,

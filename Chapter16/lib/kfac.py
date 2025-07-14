@@ -2,9 +2,9 @@
 import math
 
 import torch
-import torch.optim as optim
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
 
 # TODO: In order to make this code faster:
 # 1) Implement _extract_patches as a single cuda kernel
@@ -205,7 +205,7 @@ class KFACOptimizer(optim.Optimizer):
                 p.grad.data.add_(self.weight_decay, p.data)
 
         updates = {}
-        for i, m in enumerate(self.modules):
+        for _i, m in enumerate(self.modules):
             assert len(list(m.parameters())
                        ) == 1, "Can handle only one parameter at the moment"
             classname = m.__class__.__name__

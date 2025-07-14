@@ -1,5 +1,5 @@
-import logging
 import configparser
+import logging
 
 
 class Config:
@@ -12,7 +12,7 @@ class Config:
         self.data = configparser.ConfigParser()
         self.log.info("Reading config file %s", file_name)
         if not self.data.read(file_name):
-            raise ValueError("Config file %s not found" % file_name)
+            raise ValueError(f"Config file {file_name} not found")
 
     # sections acessors
     @property

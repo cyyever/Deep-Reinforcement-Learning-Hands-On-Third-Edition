@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
-import gymnasium as gym
 import argparse
-import numpy as np
+import collections
 import typing as tt
 
+import gymnasium as gym
+import numpy as np
 import torch
-
-from lib import wrappers
-from lib import dqn_model
-
-import collections
+from lib import dqn_model, wrappers
 
 DEFAULT_ENV_NAME = "PongNoFrameskip-v4"
 
@@ -30,7 +27,7 @@ if __name__ == "__main__":
 
     state, _ = env.reset()
     total_reward = 0.0
-    c: tt.Dict[int, int] = collections.Counter()
+    c: dict[int, int] = collections.Counter()
 
     while True:
         state_v = torch.tensor(np.expand_dims(state, 0))
@@ -41,7 +38,7 @@ if __name__ == "__main__":
         total_reward += reward
         if is_done or is_trunc:
             break
-    print("Total reward: %.2f" % total_reward)
+    print(f"Total reward: {total_reward:.2f}")
     print("Action counts:", c)
     env.close()
 

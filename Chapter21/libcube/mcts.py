@@ -1,12 +1,11 @@
-import random
-import numpy as np
 import collections
+import random
 
-from . import cubes
-from . import model
-
+import numpy as np
 import torch
 import torch.nn.functional as F
+
+from . import cubes, model
 
 
 class MCTS:
@@ -54,22 +53,22 @@ class MCTS:
 
     def dump_state(self, s):
         print("")
-        print("act_counts: %s" % ", ".join(map(lambda v: "%8d" % v, self.act_counts[s].tolist())))
-        print("probs:      %s" % ", ".join(map(lambda v: "%.2e" % v, self.prob_actions[s].tolist())))
-        print("val_maxes:  %s" % ", ".join(map(lambda v: "%.2e" % v, self.val_maxes[s].tolist())))
+        print("act_counts: {}".format(", ".join(map(lambda v: "%8d" % v, self.act_counts[s].tolist()))))
+        print("probs:      {}".format(", ".join(map(lambda v: f"{v:.2e}", self.prob_actions[s].tolist()))))
+        print("val_maxes:  {}".format(", ".join(map(lambda v: f"{v:.2e}", self.val_maxes[s].tolist()))))
 
         act_counts = self.act_counts[s]
         N_sqrt = np.sqrt(np.sum(act_counts))
         u = self.exploration_c * N_sqrt / (act_counts + 1)
-        print("u:          %s" % ", ".join(map(lambda v: "%.2e" % v, u.tolist())))
+        print("u:          {}".format(", ".join(map(lambda v: f"{v:.2e}", u.tolist()))))
         u *= self.prob_actions[s]
-        print("u*prob:     %s" % ", ".join(map(lambda v: "%.2e" % v, u.tolist())))
+        print("u*prob:     {}".format(", ".join(map(lambda v: f"{v:.2e}", u.tolist()))))
         q = self.val_maxes[s] - self.virt_loss[s]
-        print("q:          %s" % ", ".join(map(lambda v: "%.2e" % v, q.tolist())))
+        print("q:          {}".format(", ".join(map(lambda v: f"{v:.2e}", q.tolist()))))
         fin = u + q
-        print("u*prob + q: %s" % ", ".join(map(lambda v: "%.2e" % v, fin.tolist())))
+        print("u*prob + q: {}".format(", ".join(map(lambda v: f"{v:.2e}", fin.tolist()))))
         act = np.argmax(fin, axis=0)
-        print("Action: %s" % act)
+        print(f"Action: {act}")
 
     def search(self):
         s, path_actions, path_states = self._search_leaf()
@@ -122,7 +121,7 @@ class MCTS:
         :return: list of state values
         """
         policies, values = self.evaluate_states(leaf_states)
-        for s, p in zip(leaf_states, policies):
+        for s, p in zip(leaf_states, policies, strict=False):
             self.prob_actions[s] = p
         return values
 
@@ -133,7 +132,7 @@ class MCTS:
         :param actions: path of actions
         :param value: value of leaf node
         """
-        for path_s, path_a in zip(states, actions):
+        for path_s, path_a in zip(states, actions, strict=False):
             self.act_counts[path_s][path_a] += 1
             w = self.val_maxes[path_s]
             w[path_a] = max(w[path_a], value)
@@ -153,14 +152,14 @@ class MCTS:
             batch_actions.append(path_acts)
             batch_paths.append(path_s)
 
-        for s, path_actions in zip(batch_states, batch_actions):
+        for s, path_actions in zip(batch_states, batch_actions, strict=False):
             child, goals = self.cube_env.explore_state(s)
             self.edges[s] = child
             if np.any(goals):
                 return path_actions + [np.argmax(goals)]
 
         values = self._expand_leaves(batch_states)
-        for value, path_states, path_actions in zip(values, batch_paths, batch_actions):
+        for value, path_states, path_actions in zip(values, batch_paths, batch_actions, strict=False):
             self._backup_leaf(path_states, path_actions, value)
         return None
 
@@ -199,11 +198,11 @@ class MCTS:
             met.add(s)
             for ss in self.edges[s]:
                 if ss not in self.edges:
-                    max_depth = max(max_depth, depth+1)
-                    sum_depth += depth+1
+                    max_depth = max(max_depth, depth + 1)
+                    sum_depth += depth + 1
                     leaves_count += 1
                 elif ss not in met:
-                    q.append((ss, depth+1))
+                    q.append((ss, depth + 1))
         return {
             'max': max_depth,
             'mean': sum_depth / leaves_count,
@@ -231,7 +230,7 @@ class MCTS:
             s, path = queue.popleft()
             seen.add(s)
             c_states, c_goals = self.cube_env.explore_state(s)
-            for a_idx, (c_state, c_goal) in enumerate(zip(c_states, c_goals)):
+            for a_idx, (c_state, c_goal) in enumerate(zip(c_states, c_goals, strict=False)):
                 p = path + [a_idx]
                 if c_goal:
                     return p
