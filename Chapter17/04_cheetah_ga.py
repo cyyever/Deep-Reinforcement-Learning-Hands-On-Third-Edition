@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import typing as tt
 import gymnasium as gym
 from dataclasses import dataclass
 import copy
@@ -24,7 +23,7 @@ MAX_SEED = 2**32 - 1
 
 class Net(nn.Module):
     def __init__(self, obs_size: int, act_size: int, hid_size: int = 64):
-        super(Net, self).__init__()
+        super().__init__()
 
         self.mu = nn.Sequential(
             nn.Linear(obs_size, hid_size),
@@ -47,7 +46,7 @@ def mutate_net(net: Net, seed: int, copy_net: bool = True) -> Net:
     return new_net
 
 
-def build_net(env: gym.Env, seeds: tt.List[int]) -> Net:
+def build_net(env: gym.Env, seeds: list[int]) -> Net:
     torch.manual_seed(seeds[0])
     net = Net(env.observation_space.shape[0], env.action_space.shape[0])
     for seed in seeds[1:]:
@@ -57,7 +56,7 @@ def build_net(env: gym.Env, seeds: tt.List[int]) -> Net:
 
 @dataclass
 class OutputItem:
-    seeds: tt.List[int]
+    seeds: list[int]
     reward: float
     steps: int
 

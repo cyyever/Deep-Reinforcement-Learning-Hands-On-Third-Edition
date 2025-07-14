@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 from types import SimpleNamespace
-from typing import Iterable
+from collections.abc import Iterable
 import warnings
 
 import ptan

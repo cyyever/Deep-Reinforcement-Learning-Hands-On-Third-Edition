@@ -3,7 +3,6 @@ import argparse
 import numpy as np
 import torch
 import torch.nn as nn
-import warnings
 import dataclasses
 from datetime import timedelta, datetime
 import typing as tt
@@ -85,7 +84,7 @@ GAME_PARAMS = {
 }
 
 
-def unpack_batch(batch: tt.List[ExperienceFirstLast]):
+def unpack_batch(batch: list[ExperienceFirstLast]):
     states, actions, rewards, dones, last_states = [],[],[],[],[]
     for exp in batch:
         states.append(exp.state)
@@ -102,7 +101,7 @@ def unpack_batch(batch: tt.List[ExperienceFirstLast]):
 
 
 def calc_loss_dqn(
-        batch: tt.List[ExperienceFirstLast], net: nn.Module, tgt_net: nn.Module,
+        batch: list[ExperienceFirstLast], net: nn.Module, tgt_net: nn.Module,
         gamma: float, device: torch.device) -> torch.Tensor:
     states, actions, rewards, dones, next_states = unpack_batch(batch)
 
@@ -135,7 +134,7 @@ class EpsilonTracker:
 
 
 def batch_generator(buffer: ExperienceReplayBuffer, initial: int, batch_size: int) -> \
-        tt.Generator[tt.List[ExperienceFirstLast], None, None]:
+        tt.Generator[list[ExperienceFirstLast], None, None]:
     buffer.populate(initial)
     while True:
         buffer.populate(1)

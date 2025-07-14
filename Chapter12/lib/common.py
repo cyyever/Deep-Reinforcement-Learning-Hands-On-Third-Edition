@@ -46,7 +46,7 @@ class RewardTracker:
 
 class AtariA2C(nn.Module):
     def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
-        super(AtariA2C, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4),
@@ -76,7 +76,7 @@ class AtariA2C(nn.Module):
         return self.policy(conv_out), self.value(conv_out)
 
 
-def unpack_batch(batch: tt.List[ExperienceFirstLast], net: AtariA2C,
+def unpack_batch(batch: list[ExperienceFirstLast], net: AtariA2C,
                  device: torch.device, gamma: float, reward_steps: int):
     """
     Convert batch into training tensors

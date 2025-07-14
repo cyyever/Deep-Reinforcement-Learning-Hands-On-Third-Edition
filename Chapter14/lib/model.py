@@ -19,7 +19,7 @@ TOKEN_UNK = "#unk"
 
 class Model(nn.Module):
     def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
-        super(Model, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 64, 5, stride=5),
@@ -41,7 +41,7 @@ class Model(nn.Module):
 class ModelMultimodal(nn.Module):
     def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int,
                  max_dict_size: int = MM_MAX_DICT_SIZE):
-        super(ModelMultimodal, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 64, 5, stride=5),
@@ -96,7 +96,7 @@ class MultimodalPreprocessor:
     def __len__(self):
         return len(self.token_to_id)
 
-    def __call__(self, batch: tt.Tuple[tt.Any, ...] | tt.List[tt.Tuple[tt.Any, ...]]):
+    def __call__(self, batch: tt.Tuple[tt.Any, ...] | list[tt.Tuple[tt.Any, ...]]):
         """
         Convert list of multimodel observations (tuples with image and text string) into the form suitable
         for ModelMultimodal to disgest
@@ -168,7 +168,7 @@ class MultimodalPreprocessor:
 
 
 def train_demo(net: Model, optimizer: torch.optim.Optimizer,
-               batch: tt.List[ptan.experience.ExperienceFirstLast], writer, step_idx: int,
+               batch: list[ptan.experience.ExperienceFirstLast], writer, step_idx: int,
                preprocessor=ptan.agent.default_states_preprocessor,
                device: torch.device = torch.device("cpu")):
     """

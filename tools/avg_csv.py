@@ -10,9 +10,9 @@ from dataclasses import dataclass
 @dataclass
 class Series:
     start_wall: float
-    time_deltas: tt.List[float]
-    steps: tt.List[int]
-    values: tt.List[float]
+    time_deltas: list[float]
+    steps: list[int]
+    values: list[float]
 
     @classmethod
     def read(cls, path: pathlib.Path) -> "Series":
@@ -47,7 +47,7 @@ class Series:
         yield from zip(self.time_deltas, self.steps, self.values)
 
 
-def mean_max_step(series: tt.List[Series]) -> float:
+def mean_max_step(series: list[Series]) -> float:
     return sum(map(lambda s: s.steps[-1], series)) / len(series)
 
 
@@ -69,7 +69,7 @@ def avg_entries(entries: tt.Tuple[tt.Optional[tt.Tuple[float, int, float]], ...]
         return sum(deltas) / len(deltas), int(sum(steps) / len(steps)), sum(values) / len(values)
 
 
-def average_series(series: tt.List[Series], do_sum: bool = False) -> Series:
+def average_series(series: list[Series], do_sum: bool = False) -> Series:
     mean_steps = mean_max_step(series)
     start_wall = series[0].start_wall
     deltas = []

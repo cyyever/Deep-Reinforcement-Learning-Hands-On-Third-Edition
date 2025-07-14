@@ -6,7 +6,7 @@ import numpy as np
 
 class DQNNet(nn.Module):
     def __init__(self, actions: int):
-        super(DQNNet, self).__init__()
+        super().__init__()
         self.actions = actions
 
     def forward(self, x):
@@ -17,7 +17,7 @@ class DQNNet(nn.Module):
 
 class PolicyNet(nn.Module):
     def __init__(self, actions: int):
-        super(PolicyNet, self).__init__()
+        super().__init__()
         self.actions = actions
 
     def forward(self, x):

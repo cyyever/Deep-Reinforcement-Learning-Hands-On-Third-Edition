@@ -20,7 +20,7 @@ REWARD_STEPS = 10
 
 class PGN(nn.Module):
     def __init__(self, input_size: int, n_actions: int):
-        super(PGN, self).__init__()
+        super().__init__()
 
         self.net = nn.Sequential(
             nn.Linear(input_size, 128),

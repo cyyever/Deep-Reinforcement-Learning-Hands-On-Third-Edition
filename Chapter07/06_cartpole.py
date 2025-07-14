@@ -1,12 +1,11 @@
 import gymnasium as gym
-from ptan.experience import ExperienceFirstLast, ExperienceSourceFirstLast
+from ptan.experience import ExperienceFirstLast
 import ptan
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-import typing as tt
 
 
 HIDDEN_SIZE = 128
@@ -20,7 +19,7 @@ EPS_DECAY = 0.99
 
 class Net(nn.Module):
     def __init__(self, obs_size: int, hidden_size: int, n_actions: int):
-        super(Net, self).__init__()
+        super().__init__()
         self.net = nn.Sequential(
             nn.Linear(obs_size, hidden_size),
             nn.ReLU(),
@@ -32,7 +31,7 @@ class Net(nn.Module):
 
 
 @torch.no_grad()
-def unpack_batch(batch: tt.List[ExperienceFirstLast], net: Net, gamma: float):
+def unpack_batch(batch: list[ExperienceFirstLast], net: Net, gamma: float):
     states = []
     actions = []
     rewards = []

@@ -1,4 +1,3 @@
-import math
 
 import numpy as np
 import torch
@@ -18,7 +17,7 @@ DELTA_Z = (Vmax - Vmin) / (N_ATOMS - 1)
 
 class NoisyDQN(nn.Module):
     def __init__(self, input_shape, n_actions):
-        super(NoisyDQN, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4),
@@ -74,7 +73,7 @@ class BaselineDQN(nn.Module):
     Dueling net
     """
     def __init__(self, input_shape, n_actions):
-        super(BaselineDQN, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32,
@@ -114,7 +113,7 @@ class BaselineDQN(nn.Module):
 
 class MountainCarBaseDQN(nn.Module):
     def __init__(self, obs_size, n_actions, hid_size: int = 128):
-        super(MountainCarBaseDQN, self).__init__()
+        super().__init__()
 
         self.net = nn.Sequential(
             nn.Linear(obs_size, hid_size),
@@ -128,7 +127,7 @@ class MountainCarBaseDQN(nn.Module):
 
 class MountainCarNoisyNetDQN(nn.Module):
     def __init__(self, obs_size, n_actions, hid_size: int = 128):
-        super(MountainCarNoisyNetDQN, self).__init__()
+        super().__init__()
 
         self.noisy_layers = [
             NoisyLinear(hid_size, n_actions),

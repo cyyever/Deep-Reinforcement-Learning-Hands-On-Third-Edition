@@ -6,7 +6,7 @@ import typing as tt
 import numpy as np
 
 import torch
-from torch import optim, nn
+from torch import optim
 
 from ignite.engine import Engine
 
@@ -32,7 +32,7 @@ BEST_PONG = common.Hyperparams(
 
 
 def calc_loss(
-        batch: tt.List[ExperienceFirstLast],
+        batch: list[ExperienceFirstLast],
         batch_weights: np.ndarray, net: dqn_extra.RainbowDQN,
         tgt_net: dqn_extra.RainbowDQN, gamma: float,
         device: torch.device) -> tt.Tuple[torch.Tensor, np.ndarray]:

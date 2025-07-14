@@ -19,7 +19,7 @@ GAMMA = 0.9
 
 class DiscreteOneHotWrapper(gym.ObservationWrapper):
     def __init__(self, env: gym.Env):
-        super(DiscreteOneHotWrapper, self).__init__(env)
+        super().__init__(env)
         assert isinstance(env.observation_space,
                           gym.spaces.Discrete)
         shape = (env.observation_space.n, )
@@ -35,7 +35,7 @@ class DiscreteOneHotWrapper(gym.ObservationWrapper):
 class Net(nn.Module):
     def __init__(self, obs_size: int, hidden_size: int,
                  n_actions: int):
-        super(Net, self).__init__()
+        super().__init__()
         self.net = nn.Sequential(
             nn.Linear(obs_size, hidden_size),
             nn.ReLU(),
@@ -54,11 +54,11 @@ class EpisodeStep:
 @dataclass
 class Episode:
     reward: float
-    steps: tt.List[EpisodeStep]
+    steps: list[EpisodeStep]
 
 
 def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> \
-        tt.Generator[tt.List[Episode], None, None]:
+        tt.Generator[list[Episode], None, None]:
     batch = []
     episode_reward = 0.0
     episode_steps = []
@@ -85,16 +85,17 @@ def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> \
         obs = next_obs
 
 
-def filter_batch(batch: tt.List[Episode], percentile: float) -> \
-        tt.Tuple[tt.List[Episode], tt.List[np.ndarray],
-                 tt.List[int], float]:
-    reward_fun = lambda s: s.reward * (GAMMA ** len(s.steps))
+def filter_batch(batch: list[Episode], percentile: float) -> \
+        tt.Tuple[list[Episode], list[np.ndarray],
+                 list[int], float]:
+    def reward_fun(s):
+        return s.reward * (GAMMA ** len(s.steps))
     disc_rewards = list(map(reward_fun, batch))
     reward_bound = np.percentile(disc_rewards, percentile)
 
-    train_obs: tt.List[np.ndarray] = []
-    train_act: tt.List[int] = []
-    elite_batch: tt.List[Episode] = []
+    train_obs: list[np.ndarray] = []
+    train_act: list[int] = []
+    elite_batch: list[Episode] = []
 
     for example, discounted_reward in zip(batch, disc_rewards):
         if discounted_reward > reward_bound:

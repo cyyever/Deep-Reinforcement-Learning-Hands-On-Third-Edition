@@ -19,7 +19,7 @@ DELTA_Z = (Vmax - Vmin) / (N_ATOMS - 1)
 class NoisyDQN(nn.Module):
     def __init__(self, input_shape: tt.Tuple[int, ...],
                  n_actions: int):
-        super(NoisyDQN, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4),
@@ -50,7 +50,7 @@ class NoisyDQN(nn.Module):
             n.reset_noise()
 
     @torch.no_grad()
-    def noisy_layers_sigma_snr(self) -> tt.List[float]:
+    def noisy_layers_sigma_snr(self) -> list[float]:
         return [
             ((layer.weight_mu ** 2).mean().sqrt() /
              (layer.weight_sigma ** 2).mean().sqrt()).item()
@@ -87,7 +87,7 @@ class PrioReplayBuffer(ExperienceReplayBuffer):
             self.pos = (self.pos + 1) % self.capacity
 
     def sample(self, batch_size: int) -> tt.Tuple[
-        tt.List[ExperienceFirstLast], np.ndarray, np.ndarray
+        list[ExperienceFirstLast], np.ndarray, np.ndarray
     ]:
         if len(self.buffer) == self.capacity:
             prios = self.priorities
@@ -110,7 +110,7 @@ class PrioReplayBuffer(ExperienceReplayBuffer):
 
 class DuelingDQN(nn.Module):
     def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
-        super(DuelingDQN, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4),
@@ -145,7 +145,7 @@ class DuelingDQN(nn.Module):
 
 class DistributionalDQN(nn.Module):
     def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
-        super(DistributionalDQN, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4),
@@ -230,7 +230,7 @@ def distr_projection(next_distr: np.ndarray, rewards: np.ndarray,
 class RainbowDQN(nn.Module):
     def __init__(self, input_shape: tt.Tuple[int, ...],
                  n_actions: int):
-        super(RainbowDQN, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4),

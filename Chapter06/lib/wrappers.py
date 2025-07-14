@@ -8,7 +8,7 @@ from stable_baselines3.common import atari_wrappers
 
 class ImageToPyTorch(gym.ObservationWrapper):
     def __init__(self, env):
-        super(ImageToPyTorch, self).__init__(env)
+        super().__init__(env)
         obs = self.observation_space
         assert isinstance(obs, gym.spaces.Box)
         assert len(obs.shape) == 3
@@ -23,7 +23,7 @@ class ImageToPyTorch(gym.ObservationWrapper):
 
 class BufferWrapper(gym.ObservationWrapper):
     def __init__(self, env, n_steps):
-        super(BufferWrapper, self).__init__(env)
+        super().__init__(env)
         obs = env.observation_space
         assert isinstance(obs, spaces.Box)
         new_obs = gym.spaces.Box(

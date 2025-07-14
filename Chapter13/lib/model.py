@@ -2,7 +2,6 @@ import gymnasium as gym
 import ptan
 import random
 import numpy as np
-from typing import List
 
 import torch
 import torch.nn as nn
@@ -14,7 +13,7 @@ from . import preproc
 
 class DQNModel(nn.Module):
     def __init__(self, obs_size: int, cmd_size: int, hid_size: int = 256):
-        super(DQNModel, self).__init__()
+        super().__init__()
 
         self.net = nn.Sequential(
             nn.Linear(obs_size + cmd_size, hid_size),
@@ -87,7 +86,7 @@ class DQNAgent(ptan.agent.BaseAgent):
 
 
 @torch.no_grad()
-def unpack_batch(batch: List[ptan.experience.ExperienceFirstLast],
+def unpack_batch(batch: list[ptan.experience.ExperienceFirstLast],
                  preprocessor: preproc.Preprocessor,
                  net: DQNModel, device="cpu"):
     """
@@ -151,7 +150,7 @@ class CommandModel(nn.Module):
                  embeddings: nn.Embedding, max_tokens: int,
                  max_commands: int, start_token: int,
                  sep_token: int):
-        super(CommandModel, self).__init__()
+        super().__init__()
 
         self.emb = embeddings
         self.max_tokens = max_tokens
@@ -254,7 +253,7 @@ class CmdAgent(ptan.agent.BaseAgent):
         return actions, agent_states
 
 
-def pretrain_loss(cmd: CommandModel, commands: List,
+def pretrain_loss(cmd: CommandModel, commands: list,
                   observations_t: torch.Tensor):
     commands_batch = []
     target_batch = []

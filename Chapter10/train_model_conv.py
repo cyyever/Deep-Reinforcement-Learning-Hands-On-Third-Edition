@@ -134,7 +134,7 @@ if __name__ == "__main__":
         if getattr(engine.state, "best_val_reward", None) is None:
             engine.state.best_val_reward = val_reward
         if engine.state.best_val_reward < val_reward:
-            print("Best validation reward updated: %.3f -> %.3f, model saved" % (
+            print("Best validation reward updated: {:.3f} -> {:.3f}, model saved".format(
                 engine.state.best_val_reward, val_reward
             ))
             engine.state.best_val_reward = val_reward

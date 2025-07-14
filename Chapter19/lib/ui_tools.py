@@ -31,7 +31,7 @@ def drawers(active_url: str):
             ui.label("RLHF label UI").classes("text-h5 col-grow")
 
 
-def label_list_view(db: rlhf.Database, items: tt.List[rlhf.HumanLabel],
+def label_list_view(db: rlhf.Database, items: list[rlhf.HumanLabel],
                     show_resample_list: bool = True):
     selected_row: tt.Optional[dict] = None
     rows = [item.to_json(extra_id=idx) for idx, item in enumerate(items)]

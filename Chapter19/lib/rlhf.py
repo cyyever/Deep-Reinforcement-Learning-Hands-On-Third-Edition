@@ -62,8 +62,8 @@ class HumanLabel:
 @dataclass
 class Database:
     db_root: pathlib.Path
-    paths: tt.List[pathlib.Path]
-    labels: tt.List[HumanLabel]
+    paths: list[pathlib.Path]
+    labels: list[HumanLabel]
 
     def shuffle_labels(self, seed: tt.Optional[int] = None):
         random.seed(seed)
@@ -87,7 +87,7 @@ class EpisodeRecorderWrapper(gym.Wrapper):
         self._start_prob = start_prob
         self._steps_count = steps_count
         self._is_storing = False
-        self._steps: tt.List[EpisodeStep] = []
+        self._steps: list[EpisodeStep] = []
         self._prev_obs = None
         self._step_idx = 0
 
@@ -119,14 +119,14 @@ class EpisodeRecorderWrapper(gym.Wrapper):
         return obs, r, is_done, is_tr, extra
 
 
-def store_segment(root_path: pathlib.Path, step_idx: int, steps: tt.List[EpisodeStep]):
+def store_segment(root_path: pathlib.Path, step_idx: int, steps: list[EpisodeStep]):
     out_path = root_path / f"{step_idx:08d}.dat"
     dat = pickle.dumps(steps)
     out_path.write_bytes(dat)
     print(f"Stored {out_path}")
 
 
-def load_labels(path: pathlib.Path) -> tt.List[HumanLabel]:
+def load_labels(path: pathlib.Path) -> list[HumanLabel]:
     """
     Load labels from the file, but keeping only the last entries with the same (source1, source2) key.
     This is needed, as the same samples could be labelled several times.
@@ -160,7 +160,7 @@ def load_db(db_path: str) -> Database:
     return Database(db_root=db_path, paths=paths, labels=labels)
 
 
-def sample_to_label(db: Database, count: int = 20) -> tt.List[HumanLabel]:
+def sample_to_label(db: Database, count: int = 20) -> list[HumanLabel]:
     have_pairs = {
         (label.sample1, label.sample2) for label in db.labels
     }

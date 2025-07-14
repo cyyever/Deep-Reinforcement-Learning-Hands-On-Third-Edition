@@ -45,7 +45,7 @@ class RewardTracker:
 
 class AtariPGN(nn.Module):
     def __init__(self, input_shape: tt.Tuple[int, ...], n_actions: int):
-        super(AtariPGN, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4),

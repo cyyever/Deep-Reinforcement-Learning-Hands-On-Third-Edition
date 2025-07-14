@@ -4,7 +4,6 @@ from dataclasses import dataclass
 import time
 import argparse
 import numpy as np
-import typing as tt
 
 import torch
 import torch.nn as nn
@@ -43,7 +42,7 @@ def make_env():
 class Net(nn.Module):
     def __init__(self, obs_size: int, act_size: int,
                  hid_size: int = 64):
-        super(Net, self).__init__()
+        super().__init__()
 
         self.mu = nn.Sequential(
             nn.Linear(obs_size, hid_size),
@@ -74,8 +73,8 @@ def compute_centered_ranks(x):
     return y
 
 
-def train_step(optimizer: optim.Optimizer, net: Net, batch_noise: tt.List[common.TNoise],
-               batch_reward: tt.List[float], writer: SummaryWriter, step_idx: int,
+def train_step(optimizer: optim.Optimizer, net: Net, batch_noise: list[common.TNoise],
+               batch_reward: list[float], writer: SummaryWriter, step_idx: int,
                noise_std: float):
     weighted_noise = None
     norm_reward = compute_centered_ranks(np.array(batch_reward))
@@ -130,7 +129,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     device = torch.device(args.dev)
 
-    writer = SummaryWriter(comment="-cheetah-es_lr=%.3e_sigma=%.3e" % (args.lr, args.noise_std))
+    writer = SummaryWriter(comment="-cheetah-es_lr={:.3e}_sigma={:.3e}".format(args.lr, args.noise_std))
     env = make_env()
     net = Net(env.observation_space.shape[0], env.action_space.shape[0])
     print(net)

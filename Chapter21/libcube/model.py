@@ -1,5 +1,4 @@
 import enum
-import time
 import random
 import numpy as np
 
@@ -11,7 +10,7 @@ from . import cubes
 
 class Net(nn.Module):
     def __init__(self, input_shape, actions_count):
-        super(Net, self).__init__()
+        super().__init__()
 
         self.input_size = int(np.prod(input_shape))
         self.body = nn.Sequential(

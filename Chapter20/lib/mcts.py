@@ -17,13 +17,13 @@ class MCTS:
     def __init__(self, c_puct: float = 1.0):
         self.c_puct = c_puct
         # count of visits, state_int -> [N(s, a)]
-        self.visit_count: tt.Dict[int, tt.List[int]] = {}
+        self.visit_count: tt.Dict[int, list[int]] = {}
         # total value of the state's act, state_int -> [W(s, a)]
-        self.value: tt.Dict[int, tt.List[float]] = {}
+        self.value: tt.Dict[int, list[float]] = {}
         # average value of actions, state_int -> [Q(s, a)]
-        self.value_avg: tt.Dict[int, tt.List[float]] = {}
+        self.value_avg: tt.Dict[int, list[float]] = {}
         # prior probability of actions, state_int -> [P(s,a)]
-        self.probs: tt.Dict[int, tt.List[float]] = {}
+        self.probs: tt.Dict[int, list[float]] = {}
 
     def clear(self):
         self.visit_count.clear()

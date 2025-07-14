@@ -4,7 +4,6 @@ import os
 import ptan
 import torch
 import argparse
-from typing import Tuple, List
 import ptan.ignite as ptan_ignite
 
 from torch import optim
@@ -50,7 +49,7 @@ def make_env(args: argparse.Namespace) -> data.magent_parallel_env:
     return env
 
 
-def test_model(tiger_net: model.DQNModel, deer_net: model.DQNModel, device: torch.device, args: argparse.Namespace) -> Tuple[float, float, int]:
+def test_model(tiger_net: model.DQNModel, deer_net: model.DQNModel, device: torch.device, args: argparse.Namespace) -> tuple[float, float, int]:
     env = make_env(args)
     tiger_agent = ptan.agent.DQNAgent(
         tiger_net, ptan.actions.ArgmaxActionSelector(),
@@ -101,8 +100,8 @@ def test_model(tiger_net: model.DQNModel, deer_net: model.DQNModel, device: torc
     return tiger_rewards / env.count_tigers, deer_rewards / env.count_deer, total_steps
 
 
-def filter_batch(batch: List[data.ExperienceFirstLastMARL],
-                 group: str, batch_size: int) -> List[data.ExperienceFirstLastMARL]:
+def filter_batch(batch: list[data.ExperienceFirstLastMARL],
+                 group: str, batch_size: int) -> list[data.ExperienceFirstLastMARL]:
     res = []
     for sample in batch:
         if sample.group != group:
@@ -213,7 +212,7 @@ if __name__ == "__main__":
         engine.state.metrics['test_tiger_reward'] = tiger_reward
         engine.state.metrics['test_deer_reward'] = deer_reward
         engine.state.metrics['test_steps'] = steps
-        print("Test done: got %.3f tiger and %.3f deer reward after %.2f steps" % (
+        print("Test done: got {:.3f} tiger and {:.3f} deer reward after {:.2f} steps".format(
             tiger_reward, deer_reward, steps
         ))
 
@@ -221,7 +220,7 @@ if __name__ == "__main__":
         if best_test_tiger_reward is None:
             best_test_tiger_reward = tiger_reward
         elif best_test_tiger_reward < tiger_reward:
-            print("Best test tiger reward updated %.3f -> %.3f, save model" % (
+            print("Best test tiger reward updated {:.3f} -> {:.3f}, save model".format(
                 best_test_tiger_reward, tiger_reward
             ))
             best_test_tiger_reward = tiger_reward
@@ -230,7 +229,7 @@ if __name__ == "__main__":
         if best_test_deer_reward is None:
             best_test_deer_reward = deer_reward
         elif best_test_deer_reward < deer_reward:
-            print("Best test deer reward updated %.3f -> %.3f, save model" % (
+            print("Best test deer reward updated {:.3f} -> {:.3f}, save model".format(
                 best_test_deer_reward, deer_reward
             ))
             best_test_deer_reward = deer_reward

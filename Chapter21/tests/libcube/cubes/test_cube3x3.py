@@ -221,9 +221,9 @@ class CubeTransforms(unittest.TestCase):
         s = cube3x3.initial_state
         for a in cube3x3.Action:
             s = cube3x3.transform(s, a)
-            r = cube3x3.render(s)
+            cube3x3.render(s)
             s = cube3x3.transform(s, cube3x3.inverse_action(a))
-            r2 = cube3x3.render(s)
+            cube3x3.render(s)
         self.assertEqual(s, cube3x3.initial_state)
 
     def test_sequence(self):
@@ -233,10 +233,10 @@ class CubeTransforms(unittest.TestCase):
         s = cube3x3.initial_state
         for a in acts:
             s = cube3x3.transform(s, a)
-        r = cube3x3.render(s)
+        cube3x3.render(s)
         for a in reversed(acts):
             s = cube3x3.transform(s, cube3x3.inverse_action(a))
-        r = cube3x3.render(s)
+        cube3x3.render(s)
         self.assertEqual(s, cube3x3.initial_state)
 
 

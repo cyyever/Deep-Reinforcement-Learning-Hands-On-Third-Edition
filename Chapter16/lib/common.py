@@ -2,7 +2,6 @@ import numpy as np
 import torch
 import torch.distributions as distr
 import gymnasium as gym
-import typing as tt
 import ptan
 
 from lib import model
@@ -38,7 +37,7 @@ def register_env(name: str, mujoco: bool) -> str:
 
 
 def unpack_batch_a2c(
-        batch: tt.List[ptan.experience.ExperienceFirstLast],
+        batch: list[ptan.experience.ExperienceFirstLast],
         net: model.ModelCritic,
         last_val_gamma: float,
         device: torch.device):
@@ -73,7 +72,7 @@ def unpack_batch_a2c(
 
 
 @torch.no_grad()
-def unpack_batch_sac(batch: tt.List[ptan.experience.ExperienceFirstLast],
+def unpack_batch_sac(batch: list[ptan.experience.ExperienceFirstLast],
                      val_net: model.ModelCritic, twinq_net: model.ModelSACTwinQ,
                      policy_net: model.ModelActor, gamma: float, ent_alpha: float,
                      device: torch.device):
@@ -94,7 +93,7 @@ def unpack_batch_sac(batch: tt.List[ptan.experience.ExperienceFirstLast],
 
 
 
-def calc_adv_ref(trajectory: tt.List[ptan.experience.Experience],
+def calc_adv_ref(trajectory: list[ptan.experience.Experience],
                  net_crt: model.ModelCritic, states_v: torch.Tensor, gamma: float,
                  gae_lambda: float, device: torch.device):
     """

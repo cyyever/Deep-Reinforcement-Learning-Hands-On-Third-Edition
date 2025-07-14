@@ -45,7 +45,7 @@ class TextWorldPreproc(gym.Wrapper):
         :param tokens_limit: limit tokens in encoded fields
         :param reward_wrong_last_command: if given, this reward will be given if 'last_command' observation field is 'None'.
         """
-        super(TextWorldPreproc, self).__init__(env)
+        super().__init__(env)
         self._vocab_rev = vocab_rev
         self._encode_raw_text = encode_raw_text
         self._encode_extra_field = tuple(encode_extra_fields)
@@ -64,7 +64,7 @@ class TextWorldPreproc(gym.Wrapper):
     def num_fields(self):
         return self._num_fields
 
-    def _maybe_tokenize(self, s: str) -> str | tt.List[int]:
+    def _maybe_tokenize(self, s: str) -> str | list[int]:
         """
         If dictionary is present, tokenise the string, otherwise keep intact
         :param s: string to process
@@ -135,7 +135,7 @@ class LocationWrapper(gym.Wrapper):
     SEEN_LOCATION_FIELD = "location_seen"
 
     def __init__(self, env: gym.Env):
-        super(LocationWrapper, self).__init__(env)
+        super().__init__(env)
         self._seen_locations = set()
         self._cur_location = None
 
@@ -177,8 +177,8 @@ class RelativeDirectionWrapper(gym.Wrapper):
     ABSOLUTE_DIRS = ('west', 'north', 'east', 'south')
     RELATIVE_DIRS = ('right', 'forward', 'left', 'back')
     HEADING_FIELDS = tuple("heading_" + d for d in ABSOLUTE_DIRS)
-    NEW_ACTIONS = set("go " + d for d in RELATIVE_DIRS)
-    OLD_ACTIONS = set("go " + d for d in ABSOLUTE_DIRS)
+    NEW_ACTIONS = {"go " + d for d in RELATIVE_DIRS}
+    OLD_ACTIONS = {"go " + d for d in ABSOLUTE_DIRS}
 
     OLD_ACTIONS_DIRS = {
         "go " + d: idx
@@ -193,7 +193,7 @@ class RelativeDirectionWrapper(gym.Wrapper):
     def __init__(self, env: textworld.gym.envs.TextworldGymEnv):
         if not isinstance(env, textworld.gym.envs.TextworldGymEnv):
             raise ValueError(f"{self.class_name()} has to be applied to TextworldGymEnv")
-        super(RelativeDirectionWrapper, self).__init__(env)
+        super().__init__(env)
         # look north
         self._heading_idx = 1
 
@@ -276,7 +276,7 @@ class Encoder(nn.Module):
     the hidden state from LSTM
     """
     def __init__(self, emb_size: int, out_size: int):
-        super(Encoder, self).__init__()
+        super().__init__()
         self.net = nn.LSTM(input_size=emb_size, hidden_size=out_size, batch_first=True)
 
     def forward(self, x):
@@ -302,7 +302,7 @@ class Preprocessor(nn.Module):
         :param extra_flags: list of fields from observations
         to encode as numbers
         """
-        super(Preprocessor, self).__init__()
+        super().__init__()
         self._extra_flags = extra_flags
         self._enc_output_size = enc_output_size
         self.emb = nn.Embedding(num_embeddings=dict_size, embedding_dim=emb_size)
@@ -322,13 +322,13 @@ class Preprocessor(nn.Module):
     def cmd_enc_size(self):
         return self._enc_output_size
 
-    def _apply_encoder(self, batch: tt.List[tt.List[int]], encoder: Encoder):
+    def _apply_encoder(self, batch: list[list[int]], encoder: Encoder):
         dev = self.emb.weight.device
         batch_t = [self.emb(torch.tensor(sample).to(dev)) for sample in batch]
         batch_seq = rnn_utils.pack_sequence(batch_t, enforce_sorted=False)
         return encoder(batch_seq)
 
-    def encode_observations(self, observations: tt.List[dict]) -> torch.Tensor:
+    def encode_observations(self, observations: list[dict]) -> torch.Tensor:
         sequences = [obs[TextWorldPreproc.OBS_FIELD] for obs in observations ]
         res_t = self.encode_sequences(sequences)
         if not self._extra_flags:
@@ -380,7 +380,7 @@ class TransformerPreprocessor:
     def cmd_enc_size(self) -> int:
         return self._emb_size
 
-    def encode_observations(self, observations: tt.List[dict]) -> \
+    def encode_observations(self, observations: list[dict]) -> \
             torch.Tensor:
         sequences = [
             obs[TextWorldPreproc.OBS_FIELD]
@@ -398,7 +398,7 @@ class TransformerPreprocessor:
         res_t = torch.cat([res_t, extra_t], dim=1)
         return res_t
 
-    def encode_sequences(self, batches: tt.List[tt.Tuple[str, ...]]) -> torch.Tensor:
+    def encode_sequences(self, batches: list[tt.Tuple[str, ...]]) -> torch.Tensor:
         """
         Forward pass of Preprocessor
         :param batches: list of tuples with strings
@@ -413,7 +413,7 @@ class TransformerPreprocessor:
         res_t = res_t.reshape((len(batches), len(batches[0]) * self._emb_size))
         return res_t
 
-    def encode_commands(self, batch: tt.List[str]) -> torch.Tensor:
+    def encode_commands(self, batch: list[str]) -> torch.Tensor:
         """
         Apply encoder to list of commands sequence
         :param batch: list of string

@@ -81,7 +81,7 @@ class MCTSNode:
                 best_node = node
         return best_action, best_node
 
-    def get_act_probs(self, t: float = 1) -> tt.List[float]:
+    def get_act_probs(self, t: float = 1) -> list[float]:
         child_visits = sum(map(lambda n: n.visit_count, self.children.values()))
         p = np.array([(child.visit_count / child_visits) ** (1 / t)
                       for _, child in sorted(self.children.items())])
@@ -111,7 +111,7 @@ class ReprModel(nn.Module):
     Representation model, maps observations into the hidden state
     """
     def __init__(self, input_shape: tt.Tuple[int, ...]):
-        super(ReprModel, self).__init__()
+        super().__init__()
         self.conv_in = nn.Sequential(
             nn.Conv2d(input_shape[0], NUM_FILTERS, kernel_size=3, padding=1),
             nn.BatchNorm2d(NUM_FILTERS),
@@ -175,7 +175,7 @@ class PredModel(nn.Module):
     Prediction model, maps hidden state into policy and value
     """
     def __init__(self, actions: int):
-        super(PredModel, self).__init__()
+        super().__init__()
         self.policy = nn.Sequential(
             nn.Linear(HIDDEN_STATE_SIZE, 128),
             nn.ReLU(),
@@ -201,7 +201,7 @@ class DynamicsModel(nn.Module):
     reward and new hidden state.
     """
     def __init__(self, actions: int):
-        super(DynamicsModel, self).__init__()
+        super().__init__()
         self.reward = nn.Sequential(
             nn.Linear(HIDDEN_STATE_SIZE + actions, 128),
             nn.ReLU(),
@@ -267,9 +267,9 @@ class EpisodeStep:
 
 class Episode:
     def __init__(self):
-        self.steps: tt.List[EpisodeStep] = []
-        self.action_probs: tt.List[tt.List[float]] = []
-        self.root_values: tt.List[float] = []
+        self.steps: list[EpisodeStep] = []
+        self.action_probs: list[list[float]] = []
+        self.root_values: list[float] = []
 
     def __len__(self):
         return len(self.steps)
@@ -351,7 +351,7 @@ def expand_node(parent: MCTSNode, node: MCTSNode, last_action: Action,
     return float(v_t.cpu().item())
 
 
-def backpropagate(search_path: tt.List[MCTSNode], value: float, first_plays: bool,
+def backpropagate(search_path: list[MCTSNode], value: float, first_plays: bool,
                   params: MuZeroParams, min_max: MinMaxStats):
     for node in reversed(search_path):
         node.value_sum += value if node.first_plays == first_plays else -value

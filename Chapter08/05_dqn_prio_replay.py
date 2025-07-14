@@ -34,7 +34,7 @@ BEST_PONG = common.Hyperparams(
 )
 
 
-def calc_loss(batch: tt.List[ExperienceFirstLast], batch_weights: np.ndarray,
+def calc_loss(batch: list[ExperienceFirstLast], batch_weights: np.ndarray,
               net: nn.Module, tgt_net: nn.Module, gamma: float,
               device: torch.device) -> tt.Tuple[torch.Tensor, np.ndarray]:
     states, actions, rewards, dones, next_states = common.unpack_batch(batch)

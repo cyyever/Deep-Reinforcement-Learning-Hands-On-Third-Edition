@@ -1,6 +1,4 @@
 import pytest
-import pathlib
-import typing as tt
 
 import numpy as np
 
@@ -11,7 +9,7 @@ from lib import data, environ
 def test_env_simple():
     prices = data.load_relative("data/YNDX_160101_161231.csv")
     env = environ.StocksEnv({"YNDX": prices})
-    s = env.reset()
+    env.reset()
     obs, reward, done, is_tr, info = env.step(0)
     assert reward == pytest.approx(0.0)
 

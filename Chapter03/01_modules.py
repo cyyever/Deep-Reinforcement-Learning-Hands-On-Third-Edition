@@ -4,7 +4,7 @@ import torch.nn as nn
 
 class OurModule(nn.Module):
     def __init__(self, num_inputs, num_classes, dropout_prob=0.3):
-        super(OurModule, self).__init__()
+        super().__init__()
         self.pipe = nn.Sequential(
             nn.Linear(num_inputs, 5),
             nn.ReLU(),

@@ -54,7 +54,7 @@ class ForestEnv(magent_parallel_env, EzPickle):
         return cfg
 
     def generate_map(self):
-        env, map_size = self.env, self.map_size
+        env, _map_size = self.env, self.map_size
         handles = env.get_handles()
 
         env.add_walls(method="random", n=self.count_walls)
@@ -107,7 +107,7 @@ class DoubleAttackEnv(magent_parallel_env, EzPickle):
         return cfg
 
     def generate_map(self):
-        env, map_size = self.env, self.map_size
+        env, _map_size = self.env, self.map_size
         handles = env.get_handles()
 
         env.add_walls(method="random", n=self.count_walls)
@@ -158,7 +158,7 @@ class BattleEnv(magent_parallel_env, EzPickle):
         return cfg
 
     def generate_map(self):
-        env, map_size = self.env, self.map_size
+        env, _map_size = self.env, self.map_size
         handles = env.get_handles()
 
         env.add_walls(method="random", n=self.count_walls)
@@ -260,14 +260,14 @@ class MAgentExperienceSourceFirstLast:
             tr_group = self.group_agents[self.track_reward_group]
             self.total_rewards.append(episode_rewards / len(tr_group))
 
-    def pop_total_rewards(self) -> tt.List[float]:
+    def pop_total_rewards(self) -> list[float]:
         r = self.total_rewards
         if r:
             self.total_rewards = []
             self.total_steps = []
         return r
 
-    def pop_rewards_steps(self) -> tt.List[tt.Tuple[float, int]]:
+    def pop_rewards_steps(self) -> list[tt.Tuple[float, int]]:
         res = list(zip(self.total_rewards, self.total_steps))
         if res:
             self.total_rewards, self.total_steps = [], []

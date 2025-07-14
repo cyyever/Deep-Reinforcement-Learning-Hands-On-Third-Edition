@@ -59,7 +59,7 @@ def save_state_images(
             path_prefix, batch_idx, game_idx))
 
 
-def calc_loss(batch: tt.List[ExperienceFirstLast], net: dqn_extra.DistributionalDQN,
+def calc_loss(batch: list[ExperienceFirstLast], net: dqn_extra.DistributionalDQN,
               tgt_net: dqn_extra.DistributionalDQN, gamma: float,
               device: torch.device) -> torch.Tensor:
     states, actions, rewards, dones, next_states = common.unpack_batch(batch)

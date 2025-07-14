@@ -1,15 +1,14 @@
 import random
-from typing import List
 
 
 class Environment:
     def __init__(self):
         self.steps_left = 10
 
-    def get_observation(self) -> List[float]:
+    def get_observation(self) -> list[float]:
         return [0.0, 0.0, 0.0]
 
-    def get_actions(self) -> List[int]:
+    def get_actions(self) -> list[int]:
         return [0, 1]
 
     def is_done(self) -> bool:
@@ -27,7 +26,7 @@ class Agent:
         self.total_reward = 0.0
 
     def step(self, env: Environment):
-        current_obs = env.get_observation()
+        env.get_observation()
         actions = env.get_actions()
         reward = env.action(random.choice(actions))
         self.total_reward += reward

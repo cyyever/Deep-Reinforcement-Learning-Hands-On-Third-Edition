@@ -66,7 +66,7 @@ def join_obs(data: dict, delta_obs: tt.Dict[int, dict], ofs_ms: int = 100) -> di
     return new_data
 
 
-def observations_to_delta(observations: tt.List[tt.Tuple[dict, int]]) -> tt.Dict[int, dict]:
+def observations_to_delta(observations: list[tt.Tuple[dict, int]]) -> tt.Dict[int, dict]:
     """
     Convert pairs of observations with nanoseconds into relative miliseconds dict
     :param observations: list of tuples (observation, nanosecond timestamp)
@@ -87,7 +87,7 @@ def load_demo_file(
         gamma: float,
         steps: int,
         keep_text: bool = False,
-) -> tt.List[ExperienceFirstLast]:
+) -> list[ExperienceFirstLast]:
     """
     Load human demonstration from file and generate experience items from it.
     :param file_path: path of file to load
@@ -130,7 +130,7 @@ def load_demo_file(
 def load_demo_dir(
         dir_name: str, gamma: float,
         steps: int, keep_text: bool = False
-) -> tt.List[ExperienceFirstLast]:
+) -> list[ExperienceFirstLast]:
     """
     Load all the demo from given directory. They have to belong to the single environment.
     :param dir_name: Directory to load

@@ -21,7 +21,7 @@ REPLAY_BUFFER = 50000
 
 class DQN(nn.Module):
     def __init__(self, input_size: int, n_actions: int):
-        super(DQN, self).__init__()
+        super().__init__()
 
         self.net = nn.Sequential(
             nn.Linear(input_size, 128),

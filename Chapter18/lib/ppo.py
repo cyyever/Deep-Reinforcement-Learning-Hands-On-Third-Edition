@@ -4,14 +4,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Union, Callable, Optional, Tuple, List
+from collections.abc import Callable
 
 from . import dqn_extra
 
 
 class MountainCarBasePPO(nn.Module):
     def __init__(self, obs_size: int, n_actions: int, hid_size: int = 64):
-        super(MountainCarBasePPO, self).__init__()
+        super().__init__()
 
         self.actor = nn.Sequential(
             nn.Linear(obs_size, hid_size),
@@ -25,13 +25,13 @@ class MountainCarBasePPO(nn.Module):
             nn.Linear(hid_size, 1),
         )
 
-    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         return self.actor(x), self.critic(x)
 
 
 class MountainCarNoisyNetsPPO(nn.Module):
     def __init__(self, obs_size: int, n_actions: int, hid_size: int = 128):
-        super(MountainCarNoisyNetsPPO, self).__init__()
+        super().__init__()
 
         self.noisy_layers = [
             dqn_extra.NoisyLinear(hid_size, n_actions)
@@ -80,8 +80,8 @@ def batch_generator(exp_source: ptan.experience.ExperienceSource,
                     net: nn.Module,
                     trajectory_size: int, ppo_epoches: int,
                     batch_size: int, gamma: float, gae_lambda: float,
-                    device: Union[torch.device, str] = "cpu", trim_trajectory: bool = True,
-                    new_batch_callable: Optional[Callable] = None):
+                    device: torch.device | str = "cpu", trim_trajectory: bool = True,
+                    new_batch_callable: Callable | None = None):
     trj_states = []
     trj_actions = []
     trj_rewards = []
@@ -153,8 +153,8 @@ def batch_generator(exp_source: ptan.experience.ExperienceSource,
 def batch_generator_distill(exp_source: ptan.experience.ExperienceSource,
                             net: nn.Module, trajectory_size: int, ppo_epoches: int,
                             batch_size: int, gamma: float, gae_lambda: float,
-                            device: Union[torch.device, str] = "cpu", trim_trajectory: bool = True,
-                            new_batch_callable: Optional[Callable] = None):
+                            device: torch.device | str = "cpu", trim_trajectory: bool = True,
+                            new_batch_callable: Callable | None = None):
     """
     Same logic as batch_generator, but with distillery networks
     """
@@ -255,7 +255,7 @@ def batch_generator_distill(exp_source: ptan.experience.ExperienceSource,
 
 class MountainCarNetDistillery(nn.Module):
     def __init__(self, obs_size: int, hid_size: int = 128):
-        super(MountainCarNetDistillery, self).__init__()
+        super().__init__()
 
         self.ref_net = nn.Sequential(
             nn.Linear(obs_size, hid_size),
@@ -287,7 +287,7 @@ class AtariBasePPO(nn.Module):
     Dueling net
     """
     def __init__(self, input_shape, n_actions):
-        super(AtariBasePPO, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32,
@@ -326,7 +326,7 @@ class AtariNoisyNetsPPO(nn.Module):
     Dueling net
     """
     def __init__(self, input_shape, n_actions):
-        super(AtariNoisyNetsPPO, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32,
@@ -374,7 +374,7 @@ class AtariDistill(nn.Module):
     Network to be distilled
     """
     def __init__(self, input_shape):
-        super(AtariDistill, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32,
@@ -408,7 +408,7 @@ class AtariDistillPPO(nn.Module):
     Dueling net
     """
     def __init__(self, input_shape, n_actions):
-        super(AtariDistillPPO, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32,

@@ -40,7 +40,7 @@ class InputWrapper(gym.ObservationWrapper):
     2. move color channel axis to a first place
     """
     def __init__(self, *args):
-        super(InputWrapper, self).__init__(*args)
+        super().__init__(*args)
         old_space = self.observation_space
         assert isinstance(old_space, spaces.Box)
         self.observation_space = gym.spaces.Box(self.observation(old_space.low), self.observation(old_space.high),
@@ -56,7 +56,7 @@ class InputWrapper(gym.ObservationWrapper):
 
 class Discriminator(nn.Module):
     def __init__(self, input_shape):
-        super(Discriminator, self).__init__()
+        super().__init__()
         # this pipe converges image into the single number
         self.conv_pipe = nn.Sequential(
             nn.Conv2d(in_channels=input_shape[0], out_channels=DISCR_FILTERS,
@@ -86,7 +86,7 @@ class Discriminator(nn.Module):
 
 class Generator(nn.Module):
     def __init__(self, output_shape):
-        super(Generator, self).__init__()
+        super().__init__()
         # pipe deconvolves input vector into (3, 64, 64) image
         self.pipe = nn.Sequential(
             nn.ConvTranspose2d(in_channels=LATENT_VECTOR_SIZE, out_channels=GENER_FILTERS * 8,

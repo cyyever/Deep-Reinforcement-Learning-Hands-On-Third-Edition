@@ -10,7 +10,7 @@ import typing as tt
 from lib import ui_tools, rlhf
 
 db: tt.Optional[rlhf.Database] = None
-to_label: tt.List[rlhf.HumanLabel] = []
+to_label: list[rlhf.HumanLabel] = []
 
 
 

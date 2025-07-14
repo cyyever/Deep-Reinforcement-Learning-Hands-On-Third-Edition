@@ -14,7 +14,7 @@ NUM_FILTERS = 64
 
 class Net(nn.Module):
     def __init__(self, input_shape, actions_n):
-        super(Net, self).__init__()
+        super().__init__()
 
         self.conv_in = nn.Sequential(
             nn.Conv2d(input_shape[0], NUM_FILTERS, kernel_size=3, padding=1),
@@ -148,7 +148,7 @@ def state_lists_to_batch(state_lists, who_moves_lists, device="cpu"):
 #
 
 
-def play_game(mcts_stores: tt.Optional[mcts.MCTS | tt.List[mcts.MCTS]],
+def play_game(mcts_stores: tt.Optional[mcts.MCTS | list[mcts.MCTS]],
               replay_buffer: tt.Optional[collections.deque], net1: Net, net2: Net,
               steps_before_tau_0: int, mcts_searches: int, mcts_batch_size: int,
               net1_plays_first: tt.Optional[bool] = None,

@@ -10,7 +10,7 @@ HID_SIZE = 64
 
 class ModelActor(nn.Module):
     def __init__(self, obs_size: int, act_size: int):
-        super(ModelActor, self).__init__()
+        super().__init__()
 
         self.mu = nn.Sequential(
             nn.Linear(obs_size, HID_SIZE),
@@ -28,7 +28,7 @@ class ModelActor(nn.Module):
 
 class ModelCritic(nn.Module):
     def __init__(self, obs_size: int):
-        super(ModelCritic, self).__init__()
+        super().__init__()
 
         self.value = nn.Sequential(
             nn.Linear(obs_size, HID_SIZE),
@@ -44,7 +44,7 @@ class ModelCritic(nn.Module):
 
 class ModelSACTwinQ(nn.Module):
     def __init__(self, obs_size, act_size):
-        super(ModelSACTwinQ, self).__init__()
+        super().__init__()
 
         self.q1 = nn.Sequential(
             nn.Linear(obs_size + act_size, HID_SIZE),

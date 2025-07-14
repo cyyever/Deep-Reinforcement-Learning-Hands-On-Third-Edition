@@ -12,7 +12,7 @@ class ToyEnv(gym.Env):
     """
 
     def __init__(self):
-        super(ToyEnv, self).__init__()
+        super().__init__()
         self.observation_space = gym.spaces.Discrete(n=5)
         self.action_space = gym.spaces.Discrete(n=3)
         self.step_index = 0
@@ -37,14 +37,14 @@ class DullAgent(ptan.agent.BaseAgent):
     def __init__(self, action: int):
         self.action = action
 
-    def __call__(self, observations: tt.List[int], state: tt.Optional[list] = None) -> \
-            tt.Tuple[tt.List[int], tt.Optional[list]]:
+    def __call__(self, observations: list[int], state: tt.Optional[list] = None) -> \
+            tt.Tuple[list[int], tt.Optional[list]]:
         return [self.action for _ in observations], state
 
 
 class DQNNet(nn.Module):
     def __init__(self):
-        super(DQNNet, self).__init__()
+        super().__init__()
         self.ff = nn.Linear(5, 3)
 
     def forward(self, x):

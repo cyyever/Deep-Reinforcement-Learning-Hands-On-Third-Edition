@@ -1,5 +1,4 @@
 from sentence_transformers import SentenceTransformer
-import numpy as np
 
 if __name__ == "__main__":
     c = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")

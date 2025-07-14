@@ -4,7 +4,6 @@ import os
 import ptan
 import torch
 import argparse
-from typing import Tuple
 import ptan.ignite as ptan_ignite
 
 from torch import optim
@@ -39,7 +38,7 @@ def make_env(args: argparse.Namespace) -> data.magent_parallel_env:
 
 
 def test_model(a_net: model.DQNModel, device: torch.device,
-               args: argparse.Namespace) -> Tuple[float, float, int]:
+               args: argparse.Namespace) -> tuple[float, float, int]:
     env = make_env(args)
     a_agent = ptan.agent.DQNAgent(
         a_net, ptan.actions.ArgmaxActionSelector(),
@@ -160,7 +159,7 @@ if __name__ == "__main__":
         engine.state.metrics['test_a_reward'] = a_reward
         engine.state.metrics['test_b_reward'] = b_reward
         engine.state.metrics['test_steps'] = steps
-        print("Test done: got %.3f reward (a) vs %.3f reward (b) after %.2f steps" % (
+        print("Test done: got {:.3f} reward (a) vs {:.3f} reward (b) after {:.2f} steps".format(
             a_reward, b_reward, steps
         ))
 
@@ -168,7 +167,7 @@ if __name__ == "__main__":
         if best_test_reward is None:
             best_test_reward = a_reward
         elif best_test_reward < a_reward:
-            print("Best test reward updated %.3f -> %.3f, save model" % (
+            print("Best test reward updated {:.3f} -> {:.3f}, save model".format(
                 best_test_reward, a_reward
             ))
             best_test_reward = a_reward

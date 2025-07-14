@@ -35,7 +35,8 @@ def read_csv(file_path: pathlib.Path, sep: str = ',',
         count_filter = 0
         count_fixed = 0
         prev_vals = None
-        filter_func = lambda v: abs(v-vals[0]) < 1e-8
+        def filter_func(v):
+            return abs(v-vals[0]) < 1e-8
         for row in reader:
             vals = list(map(float, [row[idx] for idx in indices]))
             if filter_data and all(map(filter_func, vals[:-1])):
@@ -88,7 +89,7 @@ def load_relative(csv_path: pathlib.Path | str) -> Prices:
     return prices_to_relative(read_csv(csv_path))
 
 
-def price_files(dir_name: str) -> tt.List[pathlib.Path]:
+def price_files(dir_name: str) -> list[pathlib.Path]:
     result = []
     for path in glob.glob(os.path.join(dir_name, "*.csv")):
         result.append(pathlib.Path(path))

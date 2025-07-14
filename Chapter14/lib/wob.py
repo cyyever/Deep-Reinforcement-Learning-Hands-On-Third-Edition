@@ -1,4 +1,3 @@
-import time
 
 import gymnasium as gym
 from gymnasium import spaces
@@ -30,7 +29,7 @@ class MiniWoBClickWrapper(gym.ObservationWrapper):
 
     def __init__(self, env: gym.Env, keep_text: bool = False,
                  keep_obs: bool = False, bin_size: int = BIN_SIZE):
-        super(MiniWoBClickWrapper, self).__init__(env)
+        super().__init__(env)
         self.bin_size = bin_size
         self.keep_text = keep_text
         self.keep_obs = keep_obs

@@ -14,7 +14,7 @@ import torch.nn.functional as F
 
 class AddBias(nn.Module):
     def __init__(self, bias):
-        super(AddBias, self).__init__()
+        super().__init__()
         self._bias = nn.Parameter(bias.unsqueeze(1))
 
     def forward(self, x):
@@ -85,7 +85,7 @@ def update_running_stat(aa, m_aa, momentum):
 
 class SplitBias(nn.Module):
     def __init__(self, module):
-        super(SplitBias, self).__init__()
+        super().__init__()
         self.module = module
         self.add_bias = AddBias(module.bias.data)
         self.module.bias = None
@@ -119,7 +119,7 @@ class KFACOptimizer(optim.Optimizer):
 
         split_bias(model)
 
-        super(KFACOptimizer, self).__init__(model.parameters(), defaults)
+        super().__init__(model.parameters(), defaults)
 
         self.known_modules = {'Linear', 'Conv2d', 'AddBias'}
 

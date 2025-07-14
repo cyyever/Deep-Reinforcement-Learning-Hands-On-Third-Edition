@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from datetime import timedelta, datetime
 from types import SimpleNamespace
-from typing import Iterable, List
+from collections.abc import Iterable
 
 import ptan
 import ptan.ignite as ptan_ignite
@@ -19,7 +19,7 @@ SEED = 123
 
 
 
-def unpack_batch(batch: List[ptan.experience.ExperienceFirstLast]):
+def unpack_batch(batch: list[ptan.experience.ExperienceFirstLast]):
     states, actions, rewards, dones, last_states = [],[],[],[],[]
     for exp in batch:
         state = np.asarray(exp.state)
@@ -40,7 +40,7 @@ def unpack_batch(batch: List[ptan.experience.ExperienceFirstLast]):
 
 
 def calc_loss_dqn(
-        batch: List[ptan.experience.ExperienceFirstLast],
+        batch: list[ptan.experience.ExperienceFirstLast],
         net: nn.Module,
         tgt_net: nn.Module,
         gamma: float,
@@ -67,7 +67,7 @@ def calc_loss_dqn(
 
 
 def calc_loss_double_dqn(
-        batch: List[ptan.experience.ExperienceFirstLast],
+        batch: list[ptan.experience.ExperienceFirstLast],
         net: nn.Module,
         tgt_net: nn.Module,
         gamma: float,
@@ -180,7 +180,7 @@ def setup_ignite(engine: Engine, params: SimpleNamespace,
 class PseudoCountRewardWrapper(gym.Wrapper):
     def __init__(self, env: gym.Env, hash_function = lambda o: o,
                  reward_scale: float = 1.0):
-        super(PseudoCountRewardWrapper, self).__init__(env)
+        super().__init__(env)
         self.hash_function = hash_function
         self.reward_scale = reward_scale
         self.counts = collections.Counter()
@@ -203,7 +203,7 @@ class PseudoCountRewardWrapper(gym.Wrapper):
 
 class NetworkDistillationRewardWrapper(gym.Wrapper):
     def __init__(self, env, reward_callable, reward_scale: float = 1.0, sum_rewards: bool = True):
-        super(NetworkDistillationRewardWrapper, self).__init__(env)
+        super().__init__(env)
         self.reward_scale = reward_scale
         self.reward_callable = reward_callable
         self.sum_rewards = sum_rewards
@@ -224,6 +224,6 @@ class DistillExperienceSource(ptan.experience.ExperienceSource):
     """
     def pop_rewards_steps(self):
         res = []
-        for rewards, steps in super(DistillExperienceSource, self).pop_rewards_steps():
+        for rewards, steps in super().pop_rewards_steps():
             res.append((rewards.sum(), steps))
         return res

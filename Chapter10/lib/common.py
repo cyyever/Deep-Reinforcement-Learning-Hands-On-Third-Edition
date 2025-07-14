@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 import warnings
-from typing import Iterable
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 
 import ptan

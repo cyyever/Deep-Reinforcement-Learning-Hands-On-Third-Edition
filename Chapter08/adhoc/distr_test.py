@@ -5,7 +5,6 @@ import lib.dqn_extra
 
 sys.path.append("./")
 
-from lib import common
 
 import matplotlib as mpl
 mpl.use("Agg")

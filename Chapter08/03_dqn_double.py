@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import gymnasium as gym
 import ptan
-import argparse
-import random
 
 import torch
 import torch.optim as optim
@@ -35,7 +33,7 @@ BEST_PONG = common.Hyperparams(
 
 
 def calc_loss_double_dqn(
-        batch: tt.List[ptan.experience.ExperienceFirstLast],
+        batch: list[ptan.experience.ExperienceFirstLast],
         net: nn.Module, tgt_net: nn.Module, gamma: float, device: torch.device):
     states, actions, rewards, dones, next_states = common.unpack_batch(batch)
 

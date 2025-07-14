@@ -92,7 +92,7 @@ def gather_data(cube_env, net, max_seconds, max_steps, max_depth, samples_per_de
 
 
 def save_output(data, output_file):
-    with open(output_file, "wt", encoding='utf-8') as fd:
+    with open(output_file, "w", encoding='utf-8') as fd:
         writer = csv.writer(fd)
         writer.writerow(['start_dt', 'stop_dt', 'duration', 'depth', 'scramble', 'is_solved', 'solve_steps',
                          'sol_len_naive', 'sol_len_bfs', 'tree_depth_max', 'tree_depth_mean'])
@@ -231,7 +231,7 @@ if __name__ == "__main__":
         log.info("Processing scrambles from %s", args.input)
         count = 0
         solved = 0
-        with open(args.input, 'rt', encoding='utf-8') as fd:
+        with open(args.input, encoding='utf-8') as fd:
             for idx, l in enumerate(fd):
                 task = list(map(int, l.strip().split(',')))
                 start_dt = datetime.datetime.utcnow()

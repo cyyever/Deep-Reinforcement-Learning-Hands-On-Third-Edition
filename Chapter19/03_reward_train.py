@@ -2,7 +2,6 @@
 import argparse
 import pathlib
 import logging
-import typing as tt
 
 from lib import rlhf
 
@@ -24,7 +23,7 @@ MAX_EPOCHES = 1000
 
 class LabelsDataset(Dataset):
     def __init__(self, db: rlhf.Database,
-                 labels: tt.List[rlhf.HumanLabel],
+                 labels: list[rlhf.HumanLabel],
                  total_actions: int = TOTAL_ACTIONS):
         self.db = db
         self.labels = labels

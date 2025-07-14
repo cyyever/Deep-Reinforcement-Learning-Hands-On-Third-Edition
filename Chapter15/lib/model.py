@@ -10,7 +10,7 @@ HID_SIZE = 128
 
 class ModelA2C(nn.Module):
     def __init__(self, obs_size: int, act_size: int):
-        super(ModelA2C, self).__init__()
+        super().__init__()
 
         self.base = nn.Sequential(
             nn.Linear(obs_size, HID_SIZE),
@@ -33,7 +33,7 @@ class ModelA2C(nn.Module):
 
 class DDPGActor(nn.Module):
     def __init__(self, obs_size: int, act_size: int):
-        super(DDPGActor, self).__init__()
+        super().__init__()
 
         self.net = nn.Sequential(
             nn.Linear(obs_size, 400),
@@ -50,7 +50,7 @@ class DDPGActor(nn.Module):
 
 class DDPGCritic(nn.Module):
     def __init__(self, obs_size: int, act_size: int):
-        super(DDPGCritic, self).__init__()
+        super().__init__()
 
         self.obs_net = nn.Sequential(
             nn.Linear(obs_size, 400),
@@ -71,7 +71,7 @@ class DDPGCritic(nn.Module):
 class D4PGCritic(nn.Module):
     def __init__(self, obs_size: int, act_size: int,
                  n_atoms: int, v_min: float, v_max: float):
-        super(D4PGCritic, self).__init__()
+        super().__init__()
 
         self.obs_net = nn.Sequential(
             nn.Linear(obs_size, 400),

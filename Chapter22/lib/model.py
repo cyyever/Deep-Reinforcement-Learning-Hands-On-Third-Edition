@@ -2,12 +2,11 @@ import ptan
 import torch
 import torch.nn as nn
 import numpy as np
-from typing import List
 
 
 class DQNModel(nn.Module):
     def __init__(self, view_shape, n_actions):
-        super(DQNModel, self).__init__()
+        super().__init__()
 
         self.view_conv = nn.Sequential(
             nn.Conv2d(view_shape[0], 32, kernel_size=3, padding=0),
@@ -28,7 +27,7 @@ class DQNModel(nn.Module):
         return self.fc(conv_out)
 
 
-def unpack_batch(batch: List[ptan.experience.ExperienceFirstLast]):
+def unpack_batch(batch: list[ptan.experience.ExperienceFirstLast]):
     states, actions, rewards, dones, last_states = [],[],[],[],[]
     for exp in batch:
         states.append(exp.state)

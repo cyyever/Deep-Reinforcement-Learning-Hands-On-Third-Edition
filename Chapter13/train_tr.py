@@ -4,7 +4,6 @@ from textworld.gym import register_games
 import ptan
 import pathlib
 import argparse
-import itertools
 import numpy as np
 
 from textworld import EnvInfos
@@ -49,10 +48,10 @@ if __name__ == "__main__":
     params = common.PARAMS[args.params]
 
     game_files = [
-        "games/%s%s.ulx" % (args.game, s)
+        "games/{}{}.ulx".format(args.game, s)
         for s in range(1, args.suffices+1)
     ]
-    val_game_file = "games/%s%s.ulx" % (args.game, args.validation)
+    val_game_file = "games/{}{}.ulx".format(args.game, args.validation)
     if not all(map(lambda p: pathlib.Path(p).exists(), game_files)):
         raise RuntimeError(f"Some game files from {game_files} "
                            f"not found! Please run make_games.sh")
@@ -156,7 +155,7 @@ if __name__ == "__main__":
         if best_val_reward is None:
             engine.state.best_val_reward = reward
         elif best_val_reward < reward:
-            print("Best validation reward updated: %s -> %s" % (best_val_reward, reward))
+            print("Best validation reward updated: {} -> {}".format(best_val_reward, reward))
             save_net_name = save_path / ("best_val_%.3f_n.dat" % reward)
             torch.save(net.state_dict(), save_net_name)
             engine.state.best_val_reward = reward

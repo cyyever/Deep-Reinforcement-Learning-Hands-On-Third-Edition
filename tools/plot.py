@@ -4,7 +4,6 @@ import argparse
 import ballpark
 import collections
 from matplotlib.ticker import FuncFormatter
-import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -35,7 +34,7 @@ if __name__ == "__main__":
         hours = []
         steps = []
         vals = []
-        with open(file_name, 'rt', encoding='utf-8') as fd:
+        with open(file_name, encoding='utf-8') as fd:
             min_time = None
             for row in csv.DictReader(fd):
                 t = float(row["Wall time"])

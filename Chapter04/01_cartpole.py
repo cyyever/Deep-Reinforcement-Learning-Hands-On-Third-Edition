@@ -17,7 +17,7 @@ PERCENTILE = 70
 
 class Net(nn.Module):
     def __init__(self, obs_size: int, hidden_size: int, n_actions: int):
-        super(Net, self).__init__()
+        super().__init__()
         self.net = nn.Sequential(
             nn.Linear(obs_size, hidden_size),
             nn.ReLU(),
@@ -36,10 +36,10 @@ class EpisodeStep:
 @dataclass
 class Episode:
     reward: float
-    steps: tt.List[EpisodeStep]
+    steps: list[EpisodeStep]
 
 
-def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> tt.Generator[tt.List[Episode], None, None]:
+def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> tt.Generator[list[Episode], None, None]:
     batch = []
     episode_reward = 0.0
     episode_steps = []
@@ -66,14 +66,14 @@ def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> tt.Generator[tt.
         obs = next_obs
 
 
-def filter_batch(batch: tt.List[Episode], percentile: float) -> \
+def filter_batch(batch: list[Episode], percentile: float) -> \
         tt.Tuple[torch.FloatTensor, torch.LongTensor, float, float]:
     rewards = list(map(lambda s: s.reward, batch))
     reward_bound = float(np.percentile(rewards, percentile))
     reward_mean = float(np.mean(rewards))
 
-    train_obs: tt.List[np.ndarray] = []
-    train_act: tt.List[int] = []
+    train_obs: list[np.ndarray] = []
+    train_act: list[int] = []
     for episode in batch:
         if episode.reward < reward_bound:
             continue

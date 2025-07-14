@@ -5,7 +5,7 @@ import numpy as np
 import gymnasium as gym
 
 
-TNoise = tt.List[torch.Tensor]
+TNoise = list[torch.Tensor]
 
 
 def sample_noise(

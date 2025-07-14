@@ -60,7 +60,7 @@ class ExperienceBuffer:
     def append(self, experience: Experience):
         self.buffer.append(experience)
 
-    def sample(self, batch_size: int) -> tt.List[Experience]:
+    def sample(self, batch_size: int) -> list[Experience]:
         indices = np.random.choice(len(self), batch_size, replace=False)
         return [self.buffer[idx] for idx in indices]
 
@@ -106,7 +106,7 @@ class Agent:
         return done_reward
 
 
-def batch_to_tensors(batch: tt.List[Experience], device: torch.device) -> BatchTensors:
+def batch_to_tensors(batch: list[Experience], device: torch.device) -> BatchTensors:
     states, actions, rewards, dones, new_state = [], [], [], [], []
     for e in batch:
         states.append(e.state)
@@ -123,7 +123,7 @@ def batch_to_tensors(batch: tt.List[Experience], device: torch.device) -> BatchT
            dones_t.to(device),  new_states_t.to(device)
 
 
-def calc_loss(batch: tt.List[Experience], net: dqn_model.DQN, tgt_net: dqn_model.DQN,
+def calc_loss(batch: list[Experience], net: dqn_model.DQN, tgt_net: dqn_model.DQN,
               device: torch.device) -> torch.Tensor:
     states_t, actions_t, rewards_t, dones_t, new_states_t = batch_to_tensors(batch, device)
 

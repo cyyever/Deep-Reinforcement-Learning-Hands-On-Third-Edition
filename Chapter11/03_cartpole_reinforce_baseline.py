@@ -2,7 +2,6 @@
 import gymnasium as gym
 import ptan
 import numpy as np
-import typing as tt
 from tensorboardX import SummaryWriter
 
 import torch
@@ -17,7 +16,7 @@ EPISODES_TO_TRAIN = 4
 
 class PGN(nn.Module):
     def __init__(self, input_size: int, n_actions: int):
-        super(PGN, self).__init__()
+        super().__init__()
 
         self.net = nn.Sequential(
             nn.Linear(input_size, 128),
@@ -30,7 +29,7 @@ class PGN(nn.Module):
 
 
 
-def calc_qvals(rewards: tt.List[float]) -> tt.List[float]:
+def calc_qvals(rewards: list[float]) -> list[float]:
     res = []
     sum_r = 0.0
     for r in reversed(rewards):

@@ -2,7 +2,6 @@
 import gymnasium as gym
 import time
 import numpy as np
-import typing as tt
 
 import torch
 import torch.nn as nn
@@ -21,7 +20,7 @@ LEARNING_RATE = 0.001
 
 class Net(nn.Module):
     def __init__(self, obs_size: int, action_size: int):
-        super(Net, self).__init__()
+        super().__init__()
         self.net = nn.Sequential(
             nn.Linear(obs_size, 32),
             nn.ReLU(),
@@ -33,7 +32,7 @@ class Net(nn.Module):
         return self.net(x)
 
 
-def train_step(net: Net, batch_noise: tt.List[common.TNoise], batch_reward: tt.List[float],
+def train_step(net: Net, batch_noise: list[common.TNoise], batch_reward: list[float],
                writer: SummaryWriter, step_idx: int):
     weighted_noise = None
     norm_reward = np.array(batch_reward)

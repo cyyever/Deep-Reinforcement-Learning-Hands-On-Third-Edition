@@ -98,7 +98,7 @@ class PlayerBot:
     def _read_leaderboard(self, log_file):
         if not os.path.exists(log_file):
             return 
-        with open(log_file, 'rt', encoding='utf-8') as fd:
+        with open(log_file, encoding='utf-8') as fd:
             for l in fd:
                 data = json.loads(l)
                 bot_name = os.path.basename(data['model_file'])
@@ -161,7 +161,7 @@ During the game, your moves are numbers of columns to drop the disk.
 
     def command_play(self, bot, update, args):
         chat_id = update.message.chat_id
-        player_id = "%s:%s" % (update.message.from_user.username, update.message.from_user.id)
+        player_id = "{}:{}".format(update.message.from_user.username, update.message.from_user.id)
         try:
             model_id = int(args[0])
         except ValueError:

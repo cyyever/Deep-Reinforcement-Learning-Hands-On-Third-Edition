@@ -1,4 +1,3 @@
-import numpy as np
 import typing as tt
 
 import torch
@@ -7,7 +6,7 @@ import torch.nn as nn
 
 class SimpleFFDQN(nn.Module):
     def __init__(self, obs_len: int, actions_n: int):
-        super(SimpleFFDQN, self).__init__()
+        super().__init__()
 
         self.fc_val = nn.Sequential(
             nn.Linear(obs_len, 512),
@@ -33,7 +32,7 @@ class SimpleFFDQN(nn.Module):
 
 class DQNConv1D(nn.Module):
     def __init__(self, shape: tt.Tuple[int, ...], actions_n: int):
-        super(DQNConv1D, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv1d(shape[0], 128, 5),
@@ -66,7 +65,7 @@ class DQNConv1D(nn.Module):
 
 class DQNConv1DLarge(nn.Module):
     def __init__(self, shape, actions_n):
-        super(DQNConv1DLarge, self).__init__()
+        super().__init__()
 
         self.conv = nn.Sequential(
             nn.Conv1d(shape[0], 32, 3),

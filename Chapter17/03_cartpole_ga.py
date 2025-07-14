@@ -17,7 +17,7 @@ PARENTS_COUNT = 10
 
 class Net(nn.Module):
     def __init__(self, obs_size: int, action_size: int):
-        super(Net, self).__init__()
+        super().__init__()
         self.net = nn.Sequential(
             nn.Linear(obs_size, 32),
             nn.ReLU(),

@@ -62,7 +62,7 @@ class BatchGenerator:
         self._rewards_steps = []
         self.epsilon = None
 
-    def pop_rewards_steps(self) -> tt.List[tt.Tuple[float, int]]:
+    def pop_rewards_steps(self) -> list[tt.Tuple[float, int]]:
         res = list(self._rewards_steps)
         self._rewards_steps.clear()
         return res

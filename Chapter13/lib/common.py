@@ -1,4 +1,3 @@
-import textworld
 import re
 from textworld import text_utils
 import gymnasium as gym
@@ -96,7 +95,7 @@ def setup_ignite(engine: Engine, exp_source, run_name: str,
     tb.attach(engine, log_handler=handler, event_name=event)
 
 
-def get_games_spaces(game_files: tt.List[str]) -> tt.Tuple[
+def get_games_spaces(game_files: list[str]) -> tt.Tuple[
     tt.Dict[int, str],
     gym.Space,
     gym.Space,
@@ -128,7 +127,7 @@ def build_rev_vocab(vocab: tt.Dict[int, str]) -> tt.Dict[str, int]:
     return res
 
 
-def tokenize(text: str, rev_vocab: tt.Dict[str, int]) -> tt.List[int]:
+def tokenize(text: str, rev_vocab: tt.Dict[str, int]) -> list[int]:
     """
     Very simple tokeniser into fixed word set
     :param text: text to tokenize
